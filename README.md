@@ -33,6 +33,7 @@ Nova27's Operating System には、New OS、NOS is Open Source という意味�
 
 ```
 Linux(又はWindows Subsystem for Linux)
+make
 gcc-mingw-w64-x86-64
 qemu-system-x86
 ```
