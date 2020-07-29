@@ -14,14 +14,20 @@ EFI_STATUS
   IN CHAR16 *String
 );
 
+typedef
+EFI_STATUS
+(EFIAPI *EFI_TEXT_CLEAR_SCREEN) (
+  IN struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *This
+);
+
 typedef struct _EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL {
   char buf1[8];  /*EFI_TEXT_RESET                              Reset;                   */
-  EFI_TEXT_STRING OutputString;
+  EFI_TEXT_STRING  OutputString;
   char buf2[8];  /*EFI_TEXT_TEST_STRING                   TestString;             */
   char buf3[8];  /*EFI_TEXT_QUERY_MODE                   QueryMode;           */
   char buf4[8];  /*EFI_TEXT_SET_MODE                        SetMode;               */
   char buf5[8];  /*EFI_TEXT_SET_ATTRIBUTE                SetAttribute;          */
-  char buf6[8];  /*EFI_TEXT_CLEAR_SCREEN                 ClearScreen;          */
+  EFI_TEXT_CLEAR_SCREEN  ClearScreen;
   char buf7[8];  /*EFI_TEXT_SET_CURSOR_POSITION    SetCursorPosition;  */
   char buf8[8];  /*EFI_TEXT_ENABLE_CURSOR               EnableCursor;        */
   char buf9[8];  /*SIMPLE_TEXT_OUTPUT_MODE           *Mode;                   */
