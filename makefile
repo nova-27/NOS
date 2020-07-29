@@ -7,8 +7,8 @@ run: main.efi
 	mv $< root/EFI/BOOT/BOOTX64.EFI
 	qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd -drive format=raw,file=fat:rw:root
 
-main.efi: main.c
-	$(CC) $(CFLAGS)  -Wl,--subsystem,10 -e efi_main -o $@ $<
+main.efi: main.c efi.c
+	$(CC) $(CFLAGS) -Wl,--subsystem,10 -o $@ $+
 
 install: main.efi
 	mv $< root/EFI/BOOT/BOOTX64.EFI
