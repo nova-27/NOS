@@ -2,7 +2,7 @@ CC = x86_64-w64-mingw32-gcc
 CFLAGS =  -Wall -Wextra
 CFLAGS += -nostdinc -nostdlib
 CFLAGS += -Wl,--subsystem,10
-OBJS = main.o efi.o utils.o
+OBJS = objs/main.o objs/efi.o objs/utils.o
 
 all: main.efi
 
@@ -10,7 +10,7 @@ run: main.efi
 	mv $< root/EFI/BOOT/BOOTX64.EFI
 	qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd -m 4G -drive format=raw,file=fat:rw:root
 
-%.o: %.c
+objs/%.o: %.c
 	$(CC) $(CFLAGS) -I includes -c -o $@ $<
 
 main.efi: $(OBJS)
@@ -21,4 +21,4 @@ install: main.efi
 	cp -r root/* /mnt/usb/
 
 clean:
-	rm -rf *.o
+	rm -rf objs/*.o
