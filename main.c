@@ -1,69 +1,31 @@
 #include "efi.h"
+#include "utils.h"
 
-#define EFI_SUCCESS               0x0
-#define EFI_BUFFER_TOO_SMALL      0x8000000000000005
-
-const CHAR16* GetMemoryTypeUnicode(EFI_MEMORY_TYPE type) {
-  switch (type) {
-    case EfiReservedMemoryType: return L"EfiReservedMemoryType";
-    case EfiLoaderCode: return L"EfiLoaderCode";
-    case EfiLoaderData: return L"EfiLoaderData";
-    case EfiBootServicesCode: return L"EfiBootServicesCode";
-    case EfiBootServicesData: return L"EfiBootServicesData";
-    case EfiRuntimeServicesCode: return L"EfiRuntimeServicesCode";
-    case EfiRuntimeServicesData: return L"EfiRuntimeServicesData";
-    case EfiConventionalMemory: return L"EfiConventionalMemory";
-    case EfiUnusableMemory: return L"EfiUnusableMemory";
-    case EfiACPIReclaimMemory: return L"EfiACPIReclaimMemory";
-    case EfiACPIMemoryNVS: return L"EfiACPIMemoryNVS";
-    case EfiMemoryMappedIO: return L"EfiMemoryMappedIO";
-    case EfiMemoryMappedIOPortSpace: return L"EfiMemoryMappedIOPortSpace";
-    case EfiPalCode: return L"EfiPalCode";
-    case EfiPersistentMemory: return L"EfiPersistentMemory";
-    case EfiMaxMemoryType: return L"EfiMaxMemoryType";
-    default: return L"InvalidMemoryType";
-  }
-}
-
-/*struct MemoryMap {
-  unsigned long long buffer_size;
-  void* buffer;
-  unsigned long long map_size;
-  unsigned long long map_key;
-  unsigned long long descriptor_size;
-  uint32_t descriptor_version;
-};*/
-
-/* 整数を文字列にする */
-static void intToChar16(int num, CHAR16 *result, int redix)
+/* メモリに関する情報 */
+struct MemoryInfo
 {
-	/* 桁数を求める */
-	int digit = 1;
-	for (int i = num; i >= redix; i /= redix)
-	{
-		digit++;
-	}
+	UINTN mapSize;
+	EFI_MEMORY_DESCRIPTOR *map;
+	UINTN descriptorSize;
+	UINTN mapKey;
+};
 
-	/* 最後はnull文字 */
-	result[digit] = '\0';
+/* メモリマップを取得する */
+EFI_STATUS getMemoryMap(EFI_SYSTEM_TABLE *ST, struct MemoryInfo *memInfo) {
+	EFI_STATUS result = -1;
+	while(EFI_SUCCESS != (result = ST->BootServices->GetMemoryMap(&memInfo->mapSize, memInfo->map, &memInfo->mapKey, (UINT32 *)&memInfo->descriptorSize, 1)))
+    {
+        if(result == EFI_BUFFER_TOO_SMALL)
+        {
+			//メモリマップ領域が足りなかったら、リトライ（失敗時にmapSizeは調整される）
+			ST->BootServices->AllocatePool(EfiLoaderData, memInfo->mapSize, (VOID **)&memInfo->map);
+        } else {
+			//それ以外のエラー
+			return result;
+		}
+    }
 
-	/* 一の位から求めていく */
-	int tmp = num;
-	for (int i = digit; i > 0; i--)
-	{
-		int numOfPos = tmp % redix;
-		if (numOfPos <= 9)
-		{
-			/*0から9の範囲*/
-			result[i - 1] = numOfPos + L'0';
-		}
-		else
-		{
-			/*A(0xA)からの範囲*/
-			result[i - 1] = numOfPos - 10 + L'A';
-		}
-		tmp /= redix;
-	}
+	return EFI_SUCCESS;
 }
 
 /* エントリポイント */
@@ -72,31 +34,39 @@ efi_main(
 	IN EFI_HANDLE ImageHandle,
 	IN EFI_SYSTEM_TABLE *SystemTable)
 {
-	/* 画面クリア */
-	SystemTable->ConOut->ClearScreen(SystemTable->ConOut);
+	// 必要なデータを設定
+	efi_init(SystemTable);
+	EFI_STATUS result = -1;
 
+	// 画面クリア 
+	SystemTable->ConOut->ClearScreen(SystemTable->ConOut);
 	SystemTable->ConOut->OutputString(SystemTable->ConOut, L"**Nova27's Operating System Bootloader**\r\n");
 
-	/*CHAR8 memmap_buf[4096 * 4];
-  struct MemoryMap memmap = {sizeof(memmap_buf), memmap_buf, 0, 0, 0, 0};*/
+	// メモリマップの取得
+	struct MemoryInfo memInfo = {0, NULL, 0, 0};
+	if(EFI_SUCCESS != getMemoryMap(SystemTable, &memInfo)) {
+		//失敗したら停止
+		SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Failed to get the memory map!");
+		halt();
+	}
 
-	/* メモリマップの取得 */
-	UINTN mapSize = 0, mapKey, descriptorSize;
-	EFI_MEMORY_DESCRIPTOR *map = 0;
-	EFI_STATUS result = -1;
-	while(EFI_SUCCESS != (result = SystemTable->BootServices->GetMemoryMap(&mapSize, map, &mapKey, &descriptorSize, 1)))
-    {
-        if(result == EFI_BUFFER_TOO_SMALL)
-        {
-            mapSize += 2 * descriptorSize;
-			SystemTable->BootServices->AllocatePool(EfiLoaderData, mapSize, (VOID **)&map);
-        } else {
-			SystemTable->ConOut->OutputString(SystemTable->ConOut, "Failed to get the memory map!");
-		}
-    }
-	
+	//BootServicesを抜ける
+	result = SystemTable->BootServices->ExitBootServices(ImageHandle, memInfo.mapKey);
+  	if (result == EFI_INVALID_PARAMETER) {
+		//失敗したら再度メモリマップを取得し、ExitBootServicesを再実行
+    	result = getMemoryMap(SystemTable, &memInfo);
+    	if (EFI_SUCCESS != result) {
+      		SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Failed to get the memory map!");
+      		halt();
+    	}
+    	result = SystemTable->BootServices->ExitBootServices(ImageHandle, memInfo.mapKey);
+    	if (EFI_SUCCESS != result) {
+      		SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Could not exit boot service");
+      		halt();
+    	}
+  	}
 
-	char *startOfMemoryMap = map;
+	/*char *startOfMemoryMap = map;
     char *endOfMemoryMap = startOfMemoryMap + mapSize;
 
     char *offset = startOfMemoryMap;
@@ -106,7 +76,7 @@ efi_main(
 	int cnt = 0;
 
 	/* メモリマップの表示 */
-	SystemTable->ConOut->OutputString(SystemTable->ConOut, L"\r\n<Debuging information>\r\n");
+	/*SystemTable->ConOut->OutputString(SystemTable->ConOut, L"\r\n<Debuging information>\r\n");
 	SystemTable->ConOut->OutputString(SystemTable->ConOut, L"Type, NumberOfPages, PhysicalStart, VirtualStart, Attribute\r\n");
     while(offset < endOfMemoryMap)
     {
@@ -140,7 +110,7 @@ efi_main(
 		}
 
 		cnt++;
-    }
+    }*/
 
-	while (1);
+	halt();
 }
