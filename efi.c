@@ -1,10 +1,13 @@
 #include "efi.h"
 
 EFI_GRAPHICS_OUTPUT_PROTOCOL *GOP;
+EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *ESFSP;
 
 /* SystemTableの初期化 */
-void efi_init(EFI_SYSTEM_TABLE *ST) {
+void efi_init(EFI_SYSTEM_TABLE *ST, EFI_HANDLE ImageHandle) {
     EFI_GUID GOP_GUID = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+    EFI_GUID ESFSP_GUID = EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID;
 
     ST->BootServices->LocateProtocol(&GOP_GUID, NULL, (VOID **)&GOP);
+    ST->BootServices->LocateProtocol(&ESFSP_GUID, NULL, (void **)&ESFSP);
 }

@@ -1,5 +1,13 @@
 #include "utils.h"
 
+/* 戻り値をチェックする */
+void checkResult(EFI_SYSTEM_TABLE *ST, EFI_STATUS result, CHAR16 *String)  {
+	if(result != EFI_SUCCESS) {
+		ST->ConOut->OutputString(ST->ConOut, String);
+		halt();
+	}
+}
+
 /* 整数を文字列にする */
 void intToChar16(int num, CHAR16 *result, int redix)
 {
