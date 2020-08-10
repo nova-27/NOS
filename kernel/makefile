@@ -19,8 +19,7 @@ objs/%.o: %.cpp
 	g++ $(CFLAGS) -I includes -c -o $@ $<
 
 kernel.elf: $(OBJS)
-	#$(CC) $(CFLAGS) -e start -o $@ $+
-	ld.lld --entry KernelMain -z norelro --image-base 0x100000 --static -o $@ $+
+	ld.lld --entry KernelEntry -z norelro --image-base 0x100000 --static -o $@ $+
 
 install: kernel.elf
 	mv $< ../root/

@@ -1,3 +1,4 @@
+//フレームバッファに関する情報
 struct fb {
 	unsigned long long base;
 	unsigned long long size;
@@ -5,17 +6,11 @@ struct fb {
 	unsigned int vr;
 };
 
-//1ピクセルのデータ
-typedef struct {
-	unsigned char Blue;
-	unsigned char Green;
-	unsigned char Red;
-	unsigned char Reserved;
-} EFI_GRAPHICS_OUTPUT_BLT_PIXEL;
+//スタック用変数
+unsigned char kernel_stack[1024 * 1024] __attribute__ ((aligned(16)));
 
-unsigned char kernel_main_stack[1024 * 1024];
-
-extern void KernelMainNewStack(struct fb *fb) {
+/* エントリポイント */
+extern void KernelMain(struct fb *fb) {
 	for(int i = 0; i < 1000; i++) {
 		char *p = (char *)fb->base + i;
 		*p = 0xFF;
