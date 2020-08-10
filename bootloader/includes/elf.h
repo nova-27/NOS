@@ -7,6 +7,7 @@
 typedef uint64_t Elf64_Addr;
 typedef uint64_t Elf64_Off;
 
+//ELFのヘッダー
 typedef struct {
     unsigned char e_ident[EI_NIDENT];
     uint16_t      e_type;
@@ -24,6 +25,7 @@ typedef struct {
     uint16_t      e_shstrndx;
 } Elf64_Ehdr;
 
+//ELFのプログラムヘッダー
 typedef struct {
     uint32_t   p_type;
     uint32_t   p_flags;

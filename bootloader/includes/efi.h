@@ -9,17 +9,16 @@
 
 //プロトコルのGUID
 #define EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID \
-  {0x9042a9de,0x23dc,0x4a38,\
-  {0x96,0xfb,0x7a,0xde,0xd0,0x80,0x51,0x6a}}
+  {0x9042a9de, 0x23dc, 0x4a38, \
+  {0x96, 0xfb, 0x7a, 0xde, 0xd0, 0x80, 0x51, 0x6a}}
 
 #define EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID \
-  {0x0964e5b22,0x6459,0x11d2,\
-  {0x8e,0x39,0x00,0xa0,0xc9,0x69,0x72,0x3b}}
+  {0x0964e5b22, 0x6459, 0x11d2, \
+  {0x8e, 0x39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b}}
 
  #define EFI_FILE_INFO_ID \
-   { \
-     0x9576e92, 0x6d3f, 0x11d2, {0x8e, 0x39, 0x0, 0xa0, 0xc9, 0x69, 0x72, 0x3b } \
-   }
+   {0x9576e92, 0x6d3f, 0x11d2,\
+   {0x8e, 0x39, 0x0, 0xa0, 0xc9, 0x69, 0x72,0x3b}}
  
 
 //UEFI固有の返り値
@@ -119,6 +118,7 @@ typedef struct {
 
   EFI_PHYSICAL_ADDRESS buf2; /* EFI_RAISE_TPL RaiseTPL; */
   EFI_PHYSICAL_ADDRESS buf3; /* EFI_RESTORE_TPL RestoreTPL; */
+  //MemoryのアドレスからPagesページ確保する関数
   EFI_STATUS
   (EFIAPI *AllocatePages) (
     IN EFI_ALLOCATE_TYPE Type,
@@ -136,13 +136,14 @@ typedef struct {
     OUT UINTN *DescriptorSize,
     OUT UINT32 *DescriptorVersion
   );
-  //Bufferアドレスのメモリを確保する関数
+  //空きメモリを確保する関数
   EFI_STATUS
   (EFIAPI *AllocatePool) (
     IN EFI_MEMORY_TYPE PoolType,
     IN UINTN Size,
     OUT VOID **Buffer
   );
+  //メモリを開放する関数
   EFI_STATUS
   (EFIAPI *FreePool) (
     IN VOID *Buffer
@@ -218,7 +219,7 @@ typedef struct {
     IN VOID *Registration OPTIONAL,
     OUT VOID **Interface
   );
-  EFI_PHYSICAL_ADDRESS buf8[5];
+  //EFI_PHYSICAL_ADDRESS buf8[5];
   /*EFI_INSTALL_MULTIPLE_PROTOCOL_INTERFACES
   InstallMultipleProtocolInterfaces; // EFI 1.1+
   EFI_UNINSTALL_MULTIPLE_PROTOCOL_INTERFACES
@@ -229,7 +230,7 @@ typedef struct {
   EFI_CALCULATE_CRC32 CalculateCrc32; // EFI 1.1+
   //
   // Miscellaneous Services
-  //*/
+  //
   VOID
   (EFIAPI *CopyMem) (
     IN VOID *Destination,
@@ -242,7 +243,7 @@ typedef struct {
     IN UINTN Size,
     IN UINT8 Value
   );
-  /*EFI_CREATE_EVENT_EX CreateEventEx; // UEFI 2.0+*/
+  EFI_CREATE_EVENT_EX CreateEventEx; // UEFI 2.0+*/
 } EFI_BOOT_SERVICES;
 
 //システムテーブル
@@ -257,12 +258,12 @@ typedef struct {
   EFI_PHYSICAL_ADDRESS buf7;    /* EFI_HANDLE                                         StandardErrorHandle; */
   EFI_PHYSICAL_ADDRESS buf8;    /* EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *StdErr;                     */
   EFI_PHYSICAL_ADDRESS buf9;    /* EFI_RUNTIME_SERVICES                       *RuntimeServices;      */
-  EFI_BOOT_SERVICES                            *BootServices;
+  EFI_BOOT_SERVICES               *BootServices;
   UINTN buf11;  /* UINTN                                                  NumberOfTableEntries;*/
   EFI_PHYSICAL_ADDRESS buf12;  /* EFI_CONFIGURATION_TABLE                 *ConfigurationTable;    */
 } EFI_SYSTEM_TABLE;
 
-//フレームバッファ1ピクセルのフォーマット
+//フレームバッファピクセルのフォーマット
 typedef enum {
   PixelRedGreenBlueReserved8BitPerColor,
   PixelBlueGreenRedReserved8BitPerColor,
@@ -271,15 +272,7 @@ typedef enum {
   PixelFormatMax
 } EFI_GRAPHICS_PIXEL_FORMAT;
 
-//1ピクセルのデータ
-typedef struct {
-	unsigned char Blue;
-	unsigned char Green;
-	unsigned char Red;
-	unsigned char Reserved;
-} EFI_GRAPHICS_OUTPUT_BLT_PIXEL;
-
-//GOPのモードに関する情報
+//GOPに関する情報
 typedef struct {
   UINT32 MaxMode;
   UINT32 Mode;
@@ -308,6 +301,7 @@ typedef struct {
 typedef struct _EFI_FILE_PROTOCOL {
   UINT64 Revision;
   EFI_STATUS
+  //ファイルを開く関数
   (EFIAPI *Open) (
     IN struct _EFI_FILE_PROTOCOL *This,
     OUT struct _EFI_FILE_PROTOCOL **NewHandle,
@@ -315,20 +309,24 @@ typedef struct _EFI_FILE_PROTOCOL {
     IN UINT64 OpenMode,
     IN UINT64 Attributes
   );
+  //ファイルを閉じる関数
   EFI_STATUS
   (EFIAPI *Close) (
     IN struct _EFI_FILE_PROTOCOL *This
   );
+  //ファイルを削除する関数
   EFI_STATUS
   (EFIAPI *Delete) (
     IN struct _EFI_FILE_PROTOCOL *This
   );
+  //ファイルをメモリに読み込む関数
   EFI_STATUS
   (EFIAPI *Read) (
     IN struct _EFI_FILE_PROTOCOL *This,
     IN OUT UINTN *BufferSize,
     OUT VOID *Buffer
   );
+  //ファイルに書き込む関数
   EFI_STATUS
   (EFIAPI *Write) (
     IN struct _EFI_FILE_PROTOCOL *This,
@@ -337,6 +335,7 @@ typedef struct _EFI_FILE_PROTOCOL {
   );
   char buf1[8]; //EFI_FILE_GET_POSITION GetPosition;
   char buf2[8]; //EFI_FILE_SET_POSITION SetPosition;
+  //ファイルの情報を取得する関数
   EFI_STATUS
   (EFIAPI *GetInfo) (
     IN struct _EFI_FILE_PROTOCOL *This,
@@ -345,6 +344,7 @@ typedef struct _EFI_FILE_PROTOCOL {
     OUT VOID *Buffer
   );
   char buf4[8]; //EFI_FILE_SET_INFO SetInfo;
+  //変更を即座に反映する関数
   EFI_STATUS
   (EFIAPI *Flush) (
     IN struct _EFI_FILE_PROTOCOL *This
@@ -355,7 +355,7 @@ typedef struct _EFI_FILE_PROTOCOL {
   char buf8[8]; //EFI_FILE_FLUSH_EX FlushEx; // Added for revision 2
 } EFI_FILE_PROTOCOL;
 
-//ESFSP
+//SFSP
 typedef struct _EFI_SIMPLE_FILE_SYSTEM_PROTOCOL {
   UINT64 Revision;
   EFI_STATUS
@@ -393,13 +393,7 @@ typedef struct {
 } EFI_FILE_INFO;
 
 //変数や関数のプロトタイプ宣言
+extern EFI_SYSTEM_TABLE *ST;
 extern EFI_GRAPHICS_OUTPUT_PROTOCOL *GOP;
-extern EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *ESFSP;
-extern void efi_init(EFI_SYSTEM_TABLE *, EFI_HANDLE);
-
-struct fb {
-	unsigned long long base;
-	unsigned long long size;
-	unsigned int hr;
-	unsigned int vr;
-};
+extern EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *SFSP;
+extern void efi_init(EFI_SYSTEM_TABLE *);

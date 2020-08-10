@@ -1,7 +1,7 @@
 #include "utils.h"
 
 /* 戻り値をチェックする */
-void checkResult(EFI_SYSTEM_TABLE *ST, EFI_STATUS result, CHAR16 *String)  {
+void checkResult(EFI_STATUS result, CHAR16 *String)  {
 	if(result != EFI_SUCCESS) {
 		ST->ConOut->OutputString(ST->ConOut, String);
 		halt();
@@ -13,7 +13,7 @@ void intToChar16(UINT64 num, CHAR16 *result, int redix)
 {
 	// 桁数を求める
 	int digit = 1;
-	for (UINT64 i = num; i >= redix; i /= redix)
+	for (int i = num; i >= redix; i /= redix)
 	{
 		digit++;
 	}
