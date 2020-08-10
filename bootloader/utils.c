@@ -9,11 +9,11 @@ void checkResult(EFI_SYSTEM_TABLE *ST, EFI_STATUS result, CHAR16 *String)  {
 }
 
 /* 整数を文字列にする */
-void intToChar16(int num, CHAR16 *result, int redix)
+void intToChar16(UINT64 num, CHAR16 *result, int redix)
 {
 	// 桁数を求める
 	int digit = 1;
-	for (int i = num; i >= redix; i /= redix)
+	for (UINT64 i = num; i >= redix; i /= redix)
 	{
 		digit++;
 	}
@@ -22,7 +22,7 @@ void intToChar16(int num, CHAR16 *result, int redix)
 	result[digit] = '\0';
 
 	// 一の位から求めていく
-	int tmp = num;
+	UINT64 tmp = num;
 	for (int i = digit; i > 0; i--)
 	{
 		int numOfPos = tmp % redix;

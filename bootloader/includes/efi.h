@@ -16,9 +16,11 @@
   {0x0964e5b22,0x6459,0x11d2,\
   {0x8e,0x39,0x00,0xa0,0xc9,0x69,0x72,0x3b}}
 
-#define EFI_FILE_INFO_ID \
- {0x09576e92,0x6d3f,0x11d2,\
- {0x8e39,0x00,0xa0,0xc9,0x69,0x72,0x3b}}
+ #define EFI_FILE_INFO_ID \
+   { \
+     0x9576e92, 0x6d3f, 0x11d2, {0x8e, 0x39, 0x0, 0xa0, 0xc9, 0x69, 0x72, 0x3b } \
+   }
+ 
 
 //UEFI固有の返り値
 #define EFI_SUCCESS               0x0
@@ -41,10 +43,10 @@ typedef void VOID;
 
 typedef UINTN EFI_STATUS;
 typedef struct {
-  unsigned long  Data1;
-  unsigned short Data2;
-  unsigned short Data3;
-  unsigned char  Data4[8];
+  UINT32 Data1;
+  UINT16 Data2;
+  UINT16 Data3;
+  UINT8  Data4[8];
 } EFI_GUID;
 typedef void* EFI_HANDLE;
 
@@ -103,14 +105,27 @@ typedef enum {
   EfiMaxMemoryType
 } EFI_MEMORY_TYPE;
 
+//割り当ての種類
+typedef enum {
+  AllocateAnyPages,
+  AllocateMaxAddress,
+  AllocateAddress,
+  MaxAllocateType
+} EFI_ALLOCATE_TYPE;
+
 //ブートサービス
 typedef struct {
   char buf1[24]; /* EFI_TABLE_HEADER Hdr; */
 
   EFI_PHYSICAL_ADDRESS buf2; /* EFI_RAISE_TPL RaiseTPL; */
   EFI_PHYSICAL_ADDRESS buf3; /* EFI_RESTORE_TPL RestoreTPL; */
-
-  EFI_PHYSICAL_ADDRESS buf4; /*EFI_ALLOCATE_PAGES AllocatePages;*/
+  EFI_STATUS
+  (EFIAPI *AllocatePages) (
+    IN EFI_ALLOCATE_TYPE Type,
+    IN EFI_MEMORY_TYPE MemoryType,
+    IN UINTN Pages,
+    IN OUT EFI_PHYSICAL_ADDRESS *Memory
+  );
   EFI_PHYSICAL_ADDRESS buf5; /* EFI_FREE_PAGES FreePages; */
   //メモリマップを取得する関数
   EFI_STATUS
@@ -203,6 +218,7 @@ typedef struct {
     IN VOID *Registration OPTIONAL,
     OUT VOID **Interface
   );
+  EFI_PHYSICAL_ADDRESS buf8[5];
   /*EFI_INSTALL_MULTIPLE_PROTOCOL_INTERFACES
   InstallMultipleProtocolInterfaces; // EFI 1.1+
   EFI_UNINSTALL_MULTIPLE_PROTOCOL_INTERFACES
@@ -213,10 +229,20 @@ typedef struct {
   EFI_CALCULATE_CRC32 CalculateCrc32; // EFI 1.1+
   //
   // Miscellaneous Services
-  //
-  EFI_COPY_MEM CopyMem; // EFI 1.1+
-  EFI_SET_MEM SetMem; // EFI 1.1+
-  EFI_CREATE_EVENT_EX CreateEventEx; // UEFI 2.0+*/
+  //*/
+  VOID
+  (EFIAPI *CopyMem) (
+    IN VOID *Destination,
+    IN VOID *Source,
+    IN UINTN Length
+  );
+  VOID
+  (EFIAPI *SetMem) (
+    IN VOID *Buffer,
+    IN UINTN Size,
+    IN UINT8 Value
+  );
+  /*EFI_CREATE_EVENT_EX CreateEventEx; // UEFI 2.0+*/
 } EFI_BOOT_SERVICES;
 
 //システムテーブル
@@ -370,3 +396,10 @@ typedef struct {
 extern EFI_GRAPHICS_OUTPUT_PROTOCOL *GOP;
 extern EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *ESFSP;
 extern void efi_init(EFI_SYSTEM_TABLE *, EFI_HANDLE);
+
+struct fb {
+	unsigned long long base;
+	unsigned long long size;
+	unsigned int hr;
+	unsigned int vr;
+};
