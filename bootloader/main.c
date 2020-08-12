@@ -1,18 +1,7 @@
 #include "efi.h"
 #include "utils.h"
 #include "elf.h"
-
-#define MAX(a, b) ((a) > (b) ? (a) : (b))
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-
-/* メモリに関する情報 */
-struct MemoryInfo
-{
-	UINTN mapSize;
-	EFI_MEMORY_DESCRIPTOR *map;
-	UINTN descriptorSize;
-	UINTN mapKey;
-};
+#include "common.h"
 
 /* メモリマップを取得する */
 EFI_STATUS getMemoryMap(struct MemoryInfo *memInfo) {
@@ -82,14 +71,6 @@ void memCopyElf(Elf64_Ehdr *elf_header, void *tmpBufAddr) {
 		}
 	}
 }
-
-//フレームバッファに関する情報
-struct fb {
-	unsigned long long base;
-	unsigned long long size;
-	unsigned int hr;
-	unsigned int vr;
-};
 
 /* エントリポイント */
 EFI_STATUS
@@ -162,7 +143,16 @@ efi_main(
 
 	//エントリーアドレスを取得・カーネルに渡す引数を準備
 	UINT64 entry_addr = kernel_header->e_entry;
-	struct fb fb = {GOP->Mode->FrameBufferBase, GOP->Mode->FrameBufferSize, GOP->Mode->Info->HorizontalResolution, GOP->Mode->Info->VerticalResolution};
+	struct fb fb = {GOP->Mode->FrameBufferBase, GOP->Mode->FrameBufferSize, GOP->Mode->Info->HorizontalResolution, GOP->Mode->Info->VerticalResolution, 0};
+	switch (GOP->Mode->Info->PixelFormat) {
+    	case PixelRedGreenBlueReserved8BitPerColor:
+    	case PixelBlueGreenRedReserved8BitPerColor:
+      		fb.format = GOP->Mode->Info->PixelFormat;
+      		break;
+    	default:
+      		ST->ConOut->OutputString(ST->ConOut, (CHAR16 *)L"Incompatible pixel format");
+      		halt();
+  	}
 
 	intToChar16(entry_addr, strIntBuf, 16);
 	ST->ConOut->OutputString(ST->ConOut, (CHAR16 *)L"entry address : 0x");
