@@ -2,11 +2,11 @@
 #include "../../bootloader/includes/common.h"
 
 //色の情報を入れる構造体
-struct color {
+typedef struct {
     char red;
     char green;
     char blue;
-};
+} color;
 
 //1ピクセルの情報
 struct pixel {
@@ -19,9 +19,10 @@ struct pixel {
 //クラス
 class graphics {
 private:
-    fb *m_fb;
+    const fb *m_fb;
 public:
     graphics(fb*);
     bool drawPixel(int, int, color);
     bool fill(int, int, int, int, color);
+    int getHr() const;
 };

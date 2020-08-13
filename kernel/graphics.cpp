@@ -49,3 +49,8 @@ bool graphics::fill(int fromX, int fromY, int toX, int toY, color color) {
         }
     }
 }
+
+//画面の横幅を取得する
+int graphics::getHr() const {
+    return m_fb->hr;
+}
