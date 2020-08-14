@@ -22,7 +22,7 @@ extern "C" void KernelMain(struct fb *fb) {
 	color.blue = 0x00;
 	//(&graphics)->fill(10, 10, 100, 100, color);
 
-	console.putString("!\"#$%&\'()*+,-./0123456789");
+	console.putString("!\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMN");
 
 
 	return;
