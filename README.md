@@ -35,23 +35,18 @@ Nova27's Operating System には、New OS、NOS is Open Source という意味�
 Linux(又はWindows Subsystem for Linux)
 make
 gcc-mingw-w64-x86-64
+g++
+lld
+nasm
 qemu-system-x86
 ```
 
 ## 🚧 ビルド <a name="build"></a>
 
-パートごとのディレクトリで、以下のコマンドを実行することでバイナリが作成されます。
+`bootloader`と`kernel`ディレクトリで以下のコマンドを実行することでバイナリが作成されます。
 
 ```
 make all
-```
-
-## 🧪 テスト <a name="test"></a>
-
-パートごとのディレクトリで、以下のコマンドを実行することでQEmuが起動します。
-
-```
-make run
 ```
 
 ## ✍️ 作者 <a name="author"></a>

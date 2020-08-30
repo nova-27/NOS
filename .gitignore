@@ -1,0 +1,3 @@
+root/*
+*/objs/*
+kernel/font.cpp
