@@ -23,5 +23,5 @@ public:
     console(graphics*, int, int);
     void setColor(color);
     bool putchar(char);
-    bool putString(char*);
+    void putString(const char*);
 };

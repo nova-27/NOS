@@ -34,7 +34,18 @@ char FONT_BITMAP[0x7f][FONT_HEIGHT][FONT_WIDTH + 1] {
     {}, //GS
     {}, //RS
     {}, //US
-    {}, //SPC
+    {
+        {"        "},
+        {"        "},
+        {"        "},
+        {"        "},
+        {"        "},
+        {"        "},
+        {"        "},
+        {"        "},
+        {"        "},
+        {"        "},
+    },
     {
         {"        "},
         {"   *    "},
@@ -627,11 +638,8 @@ bool console::putchar(char character) {
 };
 
 //文字列を出力する
-bool console::putString(char *str) {
-    char *pos = str;
-
-    while(*pos != NULL) {
-        putchar(*pos);
-        pos++;
+void console::putString(const char *str) {
+    for (int i = 0; str[i] != '\0'; i++) {
+        putchar(str[i]);
     }
 }
