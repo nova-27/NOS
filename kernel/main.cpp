@@ -3,6 +3,8 @@
 #include "console.hpp"
 #include "asmfunc.hpp"
 #include "segmentation.hpp"
+#include "acpi.hpp"
+#include "interrupt.hpp"
 #include <string>
 #include <stdio.h>
 
@@ -41,14 +43,20 @@ void intToChar(unsigned long long num, char *result, int redix)
 }
 
 /* エントリポイント */
-extern "C" void KernelMain(struct fb *fb) {
+extern "C" void KernelMain(struct platform_information *pi) {
 	//graphics *screen = new graphics(fb);
 	//console *mainConsole = new console(screen, 10, 10);
 
-	graphics graphics(fb);
+	//割り込みを有効化
+	interrupt::idtr_init();
+	interrupt::pic_init();
+	__asm__ ("sti");
+
+	graphics graphics(&pi->fb);
 	console console(&graphics, 10, 10);
 
 	segmentation::init();
+	acpi::getXSDT(pi->rsdp);
 
 	console.putString("ABCDEFGHIJK");
 
