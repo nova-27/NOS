@@ -16,9 +16,14 @@
   {0x0964e5b22, 0x6459, 0x11d2, \
   {0x8e, 0x39, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b}}
 
- #define EFI_FILE_INFO_ID \
-   {0x9576e92, 0x6d3f, 0x11d2,\
-   {0x8e, 0x39, 0x0, 0xa0, 0xc9, 0x69, 0x72,0x3b}}
+#define EFI_FILE_INFO_ID \
+ {0x9576e92, 0x6d3f, 0x11d2,\
+ {0x8e, 0x39, 0x0, 0xa0, 0xc9, 0x69, 0x72,0x3b}}
+
+//コンフィグレーションテーブルのGUID
+#define EFI_ACPI_TABLE_GUID \
+  {0x8868e871,0xe4f1,0x11d3,\
+  {0xbc,0x22,0x00,0x80,0xc7,0x3c,0x88,0x81}}
  
 
 //UEFI固有の返り値
@@ -246,6 +251,12 @@ typedef struct {
   EFI_CREATE_EVENT_EX CreateEventEx; // UEFI 2.0+*/
 } EFI_BOOT_SERVICES;
 
+//EFIコンフィグレーションテーブル
+typedef struct{
+  EFI_GUID VendorGuid;
+  VOID *VendorTable;
+} EFI_CONFIGURATION_TABLE;
+
 //システムテーブル
 typedef struct {
   char buf1[24];  /* EFI_TABLE_HEADER                              Hdr;                          */
@@ -259,8 +270,8 @@ typedef struct {
   EFI_PHYSICAL_ADDRESS buf8;    /* EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *StdErr;                     */
   EFI_PHYSICAL_ADDRESS buf9;    /* EFI_RUNTIME_SERVICES                       *RuntimeServices;      */
   EFI_BOOT_SERVICES               *BootServices;
-  UINTN buf11;  /* UINTN                                                  NumberOfTableEntries;*/
-  EFI_PHYSICAL_ADDRESS buf12;  /* EFI_CONFIGURATION_TABLE                 *ConfigurationTable;    */
+  UINTN                           NumberOfTableEntries;
+  EFI_CONFIGURATION_TABLE         *ConfigurationTable;
 } EFI_SYSTEM_TABLE;
 
 //フレームバッファピクセルのフォーマット
@@ -397,3 +408,4 @@ extern EFI_SYSTEM_TABLE *ST;
 extern EFI_GRAPHICS_OUTPUT_PROTOCOL *GOP;
 extern EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *SFSP;
 extern void efi_init(EFI_SYSTEM_TABLE *);
+extern void *getAcpiTable();

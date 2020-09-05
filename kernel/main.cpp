@@ -5,8 +5,8 @@
 #include "segmentation.hpp"
 #include "acpi.hpp"
 #include "interrupt.hpp"
+#include "hpet.hpp"
 #include <string>
-#include <stdio.h>
 
 //スタック用変数
 alignas(16) unsigned char kernel_stack[1024 * 1024];
@@ -44,9 +44,8 @@ void intToChar(unsigned long long num, char *result, int redix)
 
 /* エントリポイント */
 extern "C" void KernelMain(struct platform_information *pi) {
-	//graphics *screen = new graphics(fb);
-	//console *mainConsole = new console(screen, 10, 10);
-
+	//セグメントを初期化
+	segmentation::init();
 	//割り込みを有効化
 	interrupt::idtr_init();
 	interrupt::pic_init();
@@ -54,11 +53,21 @@ extern "C" void KernelMain(struct platform_information *pi) {
 
 	graphics graphics(&pi->fb);
 	console console(&graphics, 10, 10);
+	
+	
+	acpi::init(pi->rsdp);
+	hpet::init();
 
-	segmentation::init();
-	acpi::getXSDT(pi->rsdp);
-
-	console.putString("ABCDEFGHIJK");
+	console.putString("AAA");
+	hpet::sleep(5000000);
+	console.putString("BBB");
+	hpet::sleep(5000000);
+	console.putString("CCC");
+	hpet::sleep(5000000);
+	console.putString("DDD");
+	hpet::sleep(5000000);
+	console.putString("EEE");
+	hpet::sleep(5000000);
 
 	//pciManager pci_manager;
 

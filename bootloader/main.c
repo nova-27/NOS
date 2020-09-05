@@ -143,11 +143,16 @@ efi_main(
 
 	//エントリーアドレスを取得・カーネルに渡す引数を準備
 	UINT64 entry_addr = kernel_header->e_entry;
-	struct fb fb = {GOP->Mode->FrameBufferBase, GOP->Mode->FrameBufferSize, GOP->Mode->Info->HorizontalResolution, GOP->Mode->Info->VerticalResolution, 0};
+	struct platform_information pi;
+	pi.fb.base = GOP->Mode->FrameBufferBase;
+	pi.fb.size = GOP->Mode->FrameBufferSize;
+	pi.fb.hr = GOP->Mode->Info->HorizontalResolution;
+	pi.fb.vr = GOP->Mode->Info->VerticalResolution;
+	pi.fb.format = 0;
 	switch (GOP->Mode->Info->PixelFormat) {
     	case PixelRedGreenBlueReserved8BitPerColor:
     	case PixelBlueGreenRedReserved8BitPerColor:
-      		fb.format = GOP->Mode->Info->PixelFormat;
+      		pi.fb.format = GOP->Mode->Info->PixelFormat;
       		break;
     	default:
       		ST->ConOut->OutputString(ST->ConOut, (CHAR16 *)L"Incompatible pixel format");
@@ -158,6 +163,13 @@ efi_main(
 	ST->ConOut->OutputString(ST->ConOut, (CHAR16 *)L"entry address : 0x");
 	ST->ConOut->OutputString(ST->ConOut, strIntBuf);
 	ST->ConOut->OutputString(ST->ConOut, (CHAR16 *)L"\r\n");
+
+	//ACPI テーブルを取得する
+	pi.rsdp = getAcpiTable();
+	if(pi.rsdp == NULL) {
+		ST->ConOut->OutputString(ST->ConOut, (CHAR16 *)L"Failed to get ACPI Table.");
+		halt();
+	}
 
 	// ファイル等を閉じる
 	ST->ConOut->OutputString(ST->ConOut, (CHAR16 *)L"Closing files...\r\n");
@@ -198,12 +210,12 @@ efi_main(
 	   カーネルのアセンブリ関数で一度設定した後、
 	   C言語の関数へ移る
 	*/
-	EFI_PHYSICAL_ADDRESS fb_addr = (EFI_PHYSICAL_ADDRESS)&fb;
+	EFI_PHYSICAL_ADDRESS pi_addr = (EFI_PHYSICAL_ADDRESS)&pi;
 	__asm__ (
 		 "mov  %0, %%rdi\n"
 		 "jmp  *%1\n"
 		 ::
-		 "m"(fb_addr),
+		 "m"(pi_addr),
 		 "m"(entry_addr));
 
 	return EFI_SUCCESS;

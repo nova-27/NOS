@@ -21,3 +21,9 @@ struct fb {
 	UINT32 vr;
     EFI_GRAPHICS_PIXEL_FORMAT format;
 };
+
+//プラットフォーム情報
+struct platform_information {
+	struct fb fb;
+	void* rsdp;
+};

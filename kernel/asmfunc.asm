@@ -13,4 +13,5 @@ io_in32: ; int io_in32 (int port);
 
 global default_handler
 default_handler:
+    hlt
     jmp default_handler
