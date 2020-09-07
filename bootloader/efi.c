@@ -1,4 +1,6 @@
-#include "efi.h"
+/* Copyright (C) 2020 nova27. All rights reserved. */
+
+#include "includes/efi.h"
 
 EFI_SYSTEM_TABLE *ST;
 EFI_GRAPHICS_OUTPUT_PROTOCOL *GOP;
@@ -18,21 +20,25 @@ void efi_init(EFI_SYSTEM_TABLE *SystemTable) {
 void *getAcpiTable() {
     EFI_GUID efi_acpi_table_guid = EFI_ACPI_TABLE_GUID;
 
-    for (int i = 0; i < ST->NumberOfTableEntries; i++) {
+    for (UINTN i = 0; i < ST->NumberOfTableEntries; i++) {
         EFI_GUID guid = ST->ConfigurationTable[i].VendorGuid;
-        if (guid.Data1 == efi_acpi_table_guid.Data1 && guid.Data2 == efi_acpi_table_guid.Data2 && guid.Data3 == efi_acpi_table_guid.Data3) {
+        if (guid.Data1 ==
+            efi_acpi_table_guid.Data1 &&
+            guid.Data2 == efi_acpi_table_guid.Data2 &&
+            guid.Data3 == efi_acpi_table_guid.Data3
+        ) {
             unsigned char is_equal = 1;
-            
+
             for (int j = 0; j < 8; j++) {
                 if (guid.Data4[j] != efi_acpi_table_guid.Data4[j])
                     is_equal = 0;
             }
-            
-            //GUIDが一致したら返す
+
+            // GUIDが一致したら返す
             if (is_equal == 1) return ST->ConfigurationTable[i].VendorTable;
         }
     }
 
-    //一致しなかったらnullを返す
+    // 一致しなかったらnullを返す
     return NULL;
 }
