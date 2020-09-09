@@ -1,3 +1,7 @@
+/* Copyright (C) 2020 nova27. All rights reserved. */
+
+#include <stdlib.h>
+#include <string>
 #include "../bootloader/includes/common.h"
 #include "graphics.hpp"
 #include "console.hpp"
@@ -6,73 +10,60 @@
 #include "acpi.hpp"
 #include "interrupt.hpp"
 #include "hpet.hpp"
-#include <string>
 
-//スタック用変数
+// スタック用変数
 alignas(16) unsigned char kernel_stack[1024 * 1024];
 
-void intToChar(unsigned long long num, char *result, int redix)
-{
-	// 桁数を求める
-	int digit = 1;
-	for (int i = num; i >= redix; i /= redix)
-	{
-		digit++;
-	}
+void intToChar(u_int64_t num, char *result, int redix) {
+    // 桁数を求める
+    int digit = 1;
+    for (int i = num; i >= redix; i /= redix) {
+        digit++;
+    }
 
-	// 最後はnull文字
-	result[digit] = '\0';
+    // 最後はnull文字
+    result[digit] = '\0';
 
-	// 一の位から求めていく
-	unsigned long long tmp = num;
-	for (int i = digit; i > 0; i--)
-	{
-		int numOfPos = tmp % redix;
-		if (numOfPos <= 9)
-		{
-			// 0から9の範囲
-			result[i - 1] = numOfPos + '0';
-		}
-		else
-		{
-			//A(0xA)からの範囲
-			result[i - 1] = numOfPos - 10 + 'A';
-		}
-		tmp /= redix;
-	}
+    // 一の位から求めていく
+    u_int64_t tmp = num;
+    for (int i = digit; i > 0; i--) {
+        int numOfPos = tmp % redix;
+        if (numOfPos <= 9) {
+            // 0から9の範囲
+            result[i - 1] = numOfPos + '0';
+        } else {
+            // A(0xA)からの範囲
+            result[i - 1] = numOfPos - 10 + 'A';
+        }
+        tmp /= redix;
+    }
 }
 
 /* エントリポイント */
 extern "C" void KernelMain(struct platform_information *pi) {
-	//セグメントを初期化
-	segmentation::init();
-	//割り込みを有効化
-	interrupt::idtr_init();
-	interrupt::pic_init();
-	__asm__ ("sti");
+    // セグメントを初期化
+    segmentation::init();
+    // 割り込みを有効化
+    interrupt::idtr_init();
+    interrupt::pic_init();
+    __asm__("sti");
 
-	graphics graphics(&pi->fb);
-	console console(&graphics, 10, 10);
-	
-	
-	acpi::init(pi->rsdp);
-	hpet::init();
+    graphics graphics(&pi->fb);
+    console console(&graphics, 10, 10);
 
-	console.putString("AAA");
-	hpet::sleep(5000000);
-	console.putString("BBB");
-	hpet::sleep(5000000);
-	console.putString("CCC");
-	hpet::sleep(5000000);
-	console.putString("DDD");
-	hpet::sleep(5000000);
-	console.putString("EEE");
-	hpet::sleep(5000000);
+    acpi::init(pi->rsdp);
+    hpet::init();
 
-	//pciManager pci_manager;
-
-	//mainConsole->putchar('A');
-	//mainConsole->putchar('B');
+    console.putString("AAA");
+    hpet::sleep(5000000);
+    console.putString("BBB");
+    hpet::sleep(5000000);
+    console.putString("CCC");
+    hpet::sleep(5000000);
+    console.putString("DDD");
+    hpet::sleep(5000000);
+    console.putString("EEE");
+    hpet::sleep(5000000);
 
 	/*char buf[10];
 	unsigned short vendor;
@@ -95,5 +86,5 @@ extern "C" void KernelMain(struct platform_information *pi) {
 
 	std::string a = "";*/
 
-	return;
+    return;
 }

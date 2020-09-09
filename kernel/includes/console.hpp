@@ -1,4 +1,7 @@
+/* Copyright (C) 2020 nova27. All rights reserved. */
+
 #pragma once
+
 #include "../../bootloader/includes/common.h"
 #include "graphics.hpp"
 
@@ -6,10 +9,10 @@
 #define FONT_HEIGHT 10
 #define FONT_DISTANCE 1
 
-extern char FONT_BITMAP[0x7f][FONT_HEIGHT][FONT_WIDTH + 1]; 
+extern char FONT_BITMAP[0x7f][FONT_HEIGHT][FONT_WIDTH + 1];
 
 class console {
-private:
+ private:
     graphics *m_screen;
 
     const int m_baseX;
@@ -19,7 +22,7 @@ private:
     int m_nowY;
 
     color m_color;
-public:
+ public:
     console(graphics*, int, int);
     void setColor(color);
     bool putchar(char);

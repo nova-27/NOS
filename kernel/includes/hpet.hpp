@@ -1,9 +1,11 @@
+/* Copyright (C) 2020 nova27. All rights reserved. */
+
 #pragma once
 #include "acpi.hpp"
 
-namespace hpet{
+namespace hpet {
     extern void init();
-    extern void sleep(unsigned long long);
+    extern void sleep(u_int64_t);
 
-    extern unsigned long long reg_base;
-}
+    extern u_int64_t reg_base;
+}  // namespace hpet

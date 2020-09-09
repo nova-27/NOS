@@ -1,39 +1,41 @@
+/* Copyright (C) 2020 nova27. All rights reserved. */
+
 #include "console.hpp"
 
-//フォント(ASCII)
+// フォント(ASCII)
 char FONT_BITMAP[0x7f][FONT_HEIGHT][FONT_WIDTH + 1] {
-    {}, //NUL
-    {}, //SOH
-    {}, //STX
-    {}, //ETX
-    {}, //EOT
-    {}, //ENQ
-    {}, //ACK
-    {}, //BEL
-    {}, //BS
-    {}, //HT
-    {}, //LF
-    {}, //VT
-    {}, //FF
-    {}, //CR
-    {}, //SO
-    {}, //SI
-    {}, //DLE
-    {}, //DC1
-    {}, //DC2
-    {}, //DC3
-    {}, //DC4
-    {}, //NAK
-    {}, //SYN
-    {}, //ETB
-    {}, //CAN
-    {}, //EM
-    {}, //SUB
-    {}, //ESC
-    {}, //FS
-    {}, //GS
-    {}, //RS
-    {}, //US
+    {},  // NUL
+    {},  // SOH
+    {},  // STX
+    {},  // ETX
+    {},  // EOT
+    {},  // ENQ
+    {},  // ACK
+    {},  // BEL
+    {},  // BS
+    {},  // HT
+    {},  // LF
+    {},  // VT
+    {},  // FF
+    {},  // CR
+    {},  // SO
+    {},  // SI
+    {},  // DLE
+    {},  // DC1
+    {},  // DC2
+    {},  // DC3
+    {},  // DC4
+    {},  // NAK
+    {},  // SYN
+    {},  // ETB
+    {},  // CAN
+    {},  // EM
+    {},  // SUB
+    {},  // ESC
+    {},  // FS
+    {},  // GS
+    {},  // RS
+    {},  // US
     {
         {"        "},
         {"        "},
@@ -598,10 +600,14 @@ char FONT_BITMAP[0x7f][FONT_HEIGHT][FONT_WIDTH + 1] {
         {"*    ** "},
         {"*    ** "},
     },
-}; 
+};
 
-//コンストラクタ
-console::console(graphics* screen, int baseX, int baseY) : m_screen(screen), m_baseX(baseX), m_baseY(baseY) {
+// コンストラクタ
+console::console(
+    graphics* screen,
+    int baseX,
+    int baseY
+) : m_screen(screen), m_baseX(baseX), m_baseY(baseY) {
     m_nowX = baseX;
     m_nowY = baseY;
     color color;
@@ -611,33 +617,34 @@ console::console(graphics* screen, int baseX, int baseY) : m_screen(screen), m_b
     m_color = color;
 }
 
-//文字色を設定する
+// 文字色を設定する
 void console::setColor(color color) {
     m_color = color;
 }
 
-//文字を出力する
+// 文字を出力する
 bool console::putchar(char character) {
-    if(m_nowX + FONT_WIDTH > m_screen->getHr()) {
-        //横がはみ出すなら
+    if (m_nowX + FONT_WIDTH > m_screen->getHr()) {
+        // 横がはみ出すなら
         m_nowX = m_baseX;
         m_nowY += FONT_HEIGHT + FONT_DISTANCE * 2;
-    };
+    }
 
-    //文字を描画
-    for(int x = 0; x < FONT_WIDTH; x++) {
-        for(int y = 0; y < FONT_HEIGHT; y++) {
-            if(FONT_BITMAP[character][y][x] == '*') m_screen->drawPixel(x + m_nowX, y + m_nowY, m_color);
+    // 文字を描画
+    for (int x = 0; x < FONT_WIDTH; x++) {
+        for (int y = 0; y < FONT_HEIGHT; y++) {
+            if (FONT_BITMAP[character][y][x] == '*')
+                m_screen->drawPixel(x + m_nowX, y + m_nowY, m_color);
         }
     }
 
-    //次描く位置を右へずらす
+    // 次描く位置を右へずらす
     m_nowX += FONT_WIDTH + FONT_DISTANCE;
 
     return true;
-};
+}
 
-//文字列を出力する
+// 文字列を出力する
 void console::putString(const char *str) {
     for (int i = 0; str[i] != '\0'; i++) {
         putchar(str[i]);

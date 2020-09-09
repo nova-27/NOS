@@ -1,67 +1,69 @@
+/* Copyright (C) 2020 nova27. All rights reserved. */
+
 #include "hpet.hpp"
 using namespace acpi;
 
 #define GCIDR_ADDR (reg_base)
-#define GCIDR (*(unsigned long long *)GCIDR_ADDR)
+#define GCIDR (*(u_int64_t *)GCIDR_ADDR)
 
 #define GCR_ADDR (reg_base + 0x10)
-#define GCR (*(unsigned long long *)GCR_ADDR)
+#define GCR (*(u_int64_t *)GCR_ADDR)
 
 #define MCR_ADDR (reg_base + 0xf0)
-#define MCR (*(unsigned long long *)MCR_ADDR)
+#define MCR (*(u_int64_t *)MCR_ADDR)
 
-namespace hpet{
+namespace hpet {
     struct __attribute__((packed)) HPET_TABLE {
         struct SDTH header;
         unsigned int event_timer_block_id;
         struct ACPI_ADDRESS base_address;
         unsigned char hpet_number;
-        unsigned short minimum_tick;
+        u_int16_t minimum_tick;
         unsigned char flags;
     };
 
     union gcr {
-        unsigned long long raw;
+        u_int64_t raw;
         struct __attribute__((packed)) {
-            unsigned long long enable_cnf:1;
-            unsigned long long leg_rt_cnf:1;
-            unsigned long long _reserved:62;
+            u_int64_t enable_cnf:1;
+            u_int64_t leg_rt_cnf:1;
+            u_int64_t _reserved:62;
         };
     };
 
     union gcidr {
-        unsigned long long raw;
+        u_int64_t raw;
         struct __attribute__((packed)) {
-            unsigned long long rev_id:8;
-            unsigned long long num_tim_cap:5;
-            unsigned long long count_size_cap:1;
-            unsigned long long _reserved:1;
-            unsigned long long leg_rt_cap:1;
-            unsigned long long vendor_id:16;
-            unsigned long long counter_clk_period:32;
+            u_int64_t rev_id:8;
+            u_int64_t num_tim_cap:5;
+            u_int64_t count_size_cap:1;
+            u_int64_t _reserved:1;
+            u_int64_t leg_rt_cap:1;
+            u_int64_t vendor_id:16;
+            u_int64_t counter_clk_period:32;
         };
     };
 
-    unsigned long long reg_base;
+    u_int64_t reg_base;
     void init() {
         struct HPET_TABLE *hpet_table = (struct HPET_TABLE *)get_sdt("HPET");
         reg_base = hpet_table->base_address.address;
 
         union gcr gcr;
-        gcr.raw = (*(unsigned long long *)(reg_base + 0x10));
+        gcr.raw = (*reinterpret_cast<u_int64_t *>(reg_base + 0x10));
         gcr.enable_cnf = 0;
-        (*(unsigned long long *)(reg_base + 0x10)) = gcr.raw;
+        (*reinterpret_cast<u_int64_t *>(reg_base + 0x10)) = gcr.raw;
     }
 
-    void sleep(unsigned long long us) {
-        unsigned long long mc_now = MCR;
+    void sleep(u_int64_t us) {
+        u_int64_t mc_now = MCR;
 
         /* us マイクロ秒後の main counter のカウント値を算出 */
-        unsigned long long fs = us * 1000000000;
+        u_int64_t fs = us * 1000000000;
         union gcidr gcidr;
         gcidr.raw = GCIDR;
-        unsigned long long mc_duration = fs / gcidr.counter_clk_period;
-        unsigned long long mc_after = mc_now + mc_duration;
+        u_int64_t mc_duration = fs / gcidr.counter_clk_period;
+        u_int64_t mc_after = mc_now + mc_duration;
         /* HPET が無効であれば有効化する */
         union gcr gcr;
         gcr.raw = GCR;
@@ -73,7 +75,7 @@ namespace hpet{
             to_disable = 1;
         }
         /* us マイクロ秒の経過を待つ */
-        while (MCR < mc_after);
+        while (MCR < mc_after) {}
         /* 元々無効であった場合は無効に戻しておく */
         if (to_disable) {
             gcr.raw = GCR;
@@ -81,4 +83,4 @@ namespace hpet{
             GCR = gcr.raw;
         }
     }
-}
+}  // namespace hpet

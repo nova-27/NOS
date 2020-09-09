@@ -1,9 +1,12 @@
+/* Copyright (C) 2020 nova27. All rights reserved. */
+
 #pragma once
 
+#include <stdlib.h>
 #include <cstring>
 
 namespace acpi {
-    //SDTHの構造
+    // SDTHの構造
     struct __attribute__((packed)) SDTH {
         char Signature[4];
         unsigned int Length;
@@ -21,11 +24,12 @@ namespace acpi {
         unsigned char register_bit_width;
         unsigned char register_bit_offset;
         unsigned char _reserved;
-        unsigned long long address;
+        u_int64_t address;
     };
 
-    //初期化処理
+    // 初期化処理
     extern void init(void *rsdp);
 
+    // SDTを取得
     extern struct SDTH *get_sdt(char *sig);
-}
+}  // namespace acpi
