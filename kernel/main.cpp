@@ -1,4 +1,10 @@
-/* Copyright (C) 2020 nova27. All rights reserved. */
+//
+// Nova27's Operating System
+//
+// Copyright (c) 2020 nova27
+//
+// This software is released under the MIT License.
+// http://opensource.org/licenses/mit-license.php
 
 #include <stdlib.h>
 #include <string>
@@ -39,7 +45,7 @@ void intToChar(u_int64_t num, char *result, int redix) {
     }
 }
 
-/* エントリポイント */
+// エントリポイント
 extern "C" void KernelMain(struct platform_information *pi) {
     // セグメントを初期化
     segmentation::init();
@@ -48,8 +54,8 @@ extern "C" void KernelMain(struct platform_information *pi) {
     interrupt::pic_init();
     __asm__("sti");
 
-    graphics graphics(&pi->fb);
-    console console(&graphics, 10, 10);
+    Graphics graphics(&pi->fb);
+    Console console(&graphics, 10, 10);
 
     acpi::init(pi->rsdp);
     hpet::init();
@@ -65,26 +71,25 @@ extern "C" void KernelMain(struct platform_information *pi) {
     console.putString("EEE");
     hpet::sleep(5000000);
 
-	/*char buf[10];
-	unsigned short vendor;
-  	unsigned short deviceID;
+    // char buf[10];
+    // unsigned short vendor;
+    // unsigned short deviceID;
 
-  	for(int bus = 0; bus <= 255; bus++) {
-    	for(int slot = 0; slot <= 31; slot++) {
-      		if((vendor = pci_manager.PCIConfigReadWord(bus, slot, 0, 0)) != 0xFFFF) {
-				intToChar(vendor, buf, 16);
-				console.putString(buf);
-				console.putString(":");
+    // for(int bus = 0; bus <= 255; bus++) {
+        // for(int slot = 0; slot <= 31; slot++) {
+            // vendor = pci_manager.PCIConfigReadWord(bus, slot, 0, 0);
+            // if(vendor != 0xFFFF) {
+                // intToChar(vendor, buf, 16);
+                // console.putString(buf);
+                // console.putString(":");
 
-				deviceID = pci_manager.PCIConfigReadWord(bus, slot, 0, 2);
-				intToChar(deviceID, buf, 16);
-				console.putString(buf);
-				console.putString(" ");
-			}
-    	}
-  	}
-
-	std::string a = "";*/
+                // deviceID = pci_manager.PCIConfigReadWord(bus, slot, 0, 2);
+                // intToChar(deviceID, buf, 16);
+                // console.putString(buf);
+                // console.putString(" ");
+            // }
+        // }
+    // }
 
     return;
 }

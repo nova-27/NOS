@@ -1,4 +1,10 @@
-/* Copyright (C) 2020 nova27. All rights reserved. */
+//
+// Nova27's Operating System
+//
+// Copyright (c) 2020 nova27
+//
+// This software is released under the MIT License.
+// http://opensource.org/licenses/mit-license.php
 
 #include "hpet.hpp"
 using namespace acpi;
@@ -13,10 +19,10 @@ using namespace acpi;
 #define MCR (*(u_int64_t *)MCR_ADDR)
 
 namespace hpet {
-    struct __attribute__((packed)) HPET_TABLE {
-        struct SDTH header;
+    struct __attribute__((packed)) HpetTable {
+        struct Sdth header;
         unsigned int event_timer_block_id;
-        struct ACPI_ADDRESS base_address;
+        struct AcpiAddress base_address;
         unsigned char hpet_number;
         u_int16_t minimum_tick;
         unsigned char flags;
@@ -46,7 +52,7 @@ namespace hpet {
 
     u_int64_t reg_base;
     void init() {
-        struct HPET_TABLE *hpet_table = (struct HPET_TABLE *)get_sdt("HPET");
+        struct HpetTable *hpet_table = (struct HpetTable *)get_sdt("HPET");
         reg_base = hpet_table->base_address.address;
 
         union gcr gcr;
@@ -58,25 +64,25 @@ namespace hpet {
     void sleep(u_int64_t us) {
         u_int64_t mc_now = MCR;
 
-        /* us マイクロ秒後の main counter のカウント値を算出 */
+        // us マイクロ秒後の main counter のカウント値を算出
         u_int64_t fs = us * 1000000000;
         union gcidr gcidr;
         gcidr.raw = GCIDR;
         u_int64_t mc_duration = fs / gcidr.counter_clk_period;
         u_int64_t mc_after = mc_now + mc_duration;
-        /* HPET が無効であれば有効化する */
+        // HPET が無効であれば有効化する
         union gcr gcr;
         gcr.raw = GCR;
         unsigned char to_disable = 0;
         if (!gcr.enable_cnf) {
             gcr.enable_cnf = 1;
             GCR = gcr.raw;
-            /* sleep() を抜ける際に元に戻す (disable する) */
+            // sleep() を抜ける際に元に戻す (disable する)
             to_disable = 1;
         }
-        /* us マイクロ秒の経過を待つ */
+        // us マイクロ秒の経過を待つ
         while (MCR < mc_after) {}
-        /* 元々無効であった場合は無効に戻しておく */
+        // 元々無効であった場合は無効に戻しておく
         if (to_disable) {
             gcr.raw = GCR;
             gcr.enable_cnf = 0;

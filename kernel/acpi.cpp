@@ -1,10 +1,16 @@
-/* Copyright (C) 2020 nova27. All rights reserved. */
+//
+// Nova27's Operating System
+//
+// Copyright (c) 2020 nova27
+//
+// This software is released under the MIT License.
+// http://opensource.org/licenses/mit-license.php
 
 #include "acpi.hpp"
 
 namespace acpi {
     // RSDPの構造
-    struct __attribute__((packed)) RSDP {
+    struct __attribute__((packed)) Rsdp {
         char Signature[8];
         unsigned char Checksum;
         char OEMID[6];
@@ -17,23 +23,23 @@ namespace acpi {
     };
 
     // XSDTの構造
-    struct __attribute__((packed)) XSDT {
-        struct SDTH Header;
-        struct SDTH *Entry[0];
+    struct __attribute__((packed)) Xsdt {
+        struct Sdth Header;
+        struct Sdth *Entry[0];
     };
 
-    struct XSDT *xsdt;
+    struct Xsdt *xsdt;
     int num_sdts;
 
     // 初期化処理
     void init(void *rsdp) {
-        xsdt = (struct XSDT *)((struct RSDP *)rsdp)->XsdtAddress;
+        xsdt = (struct Xsdt *)((struct Rsdp *)rsdp)->XsdtAddress;
         num_sdts =
-            (xsdt->Header.Length - sizeof(struct SDTH)) / sizeof(struct SDTH *);
+            (xsdt->Header.Length - sizeof(struct Sdth)) / sizeof(struct Sdth *);
     }
 
     // SDTを取得
-    struct SDTH *get_sdt(char *sig) {
+    struct Sdth *get_sdt(char *sig) {
         for (int i = 0; i < num_sdts; i++) {
             bool is_equal = true;
             for (int j = 0; j < 4; j++) {

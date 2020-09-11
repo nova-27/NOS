@@ -1,4 +1,10 @@
-/* Copyright (C) 2020 nova27. All rights reserved. */
+//
+// Nova27's Operating System
+//
+// Copyright (c) 2020 nova27
+//
+// This software is released under the MIT License.
+// http://opensource.org/licenses/mit-license.php
 
 #pragma once
 
@@ -7,7 +13,7 @@
 
 namespace acpi {
     // SDTHの構造
-    struct __attribute__((packed)) SDTH {
+    struct __attribute__((packed)) Sdth {
         char Signature[4];
         unsigned int Length;
         unsigned char Revision;
@@ -19,7 +25,7 @@ namespace acpi {
         unsigned int Creator_Revision;
     };
 
-    struct __attribute__((packed)) ACPI_ADDRESS {
+    struct __attribute__((packed)) AcpiAddress {
         unsigned char address_space_id;
         unsigned char register_bit_width;
         unsigned char register_bit_offset;
@@ -31,5 +37,5 @@ namespace acpi {
     extern void init(void *rsdp);
 
     // SDTを取得
-    extern struct SDTH *get_sdt(char *sig);
+    extern struct Sdth *get_sdt(char *sig);
 }  // namespace acpi
