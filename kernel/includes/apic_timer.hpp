@@ -7,11 +7,9 @@
 // http://opensource.org/licenses/mit-license.php
 
 #pragma once
-#include "acpi.hpp"
 
-namespace hpet {
-    extern void init();
-    extern void sleep(u_int64_t);
-
-    extern u_int64_t reg_base;
-}  // namespace hpet
+// ACPI PM Timer
+namespace apic_timer {
+    // 初期化
+    extern void Init();
+}  // namespace apic_timer

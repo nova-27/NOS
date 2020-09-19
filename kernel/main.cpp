@@ -15,7 +15,9 @@
 #include "segmentation.hpp"
 #include "acpi.hpp"
 #include "interrupt.hpp"
-#include "hpet.hpp"
+#include "acpi_timer.hpp"
+#include "apic_timer.hpp"
+#include "serial_port.hpp"
 
 // スタック用変数
 alignas(16) unsigned char kernel_stack[1024 * 1024];
@@ -45,6 +47,7 @@ void intToChar(u_int64_t num, char *result, int redix) {
     }
 }
 
+Console *console;
 // エントリポイント
 extern "C" void KernelMain(struct platform_information *pi) {
     // セグメントを初期化
@@ -52,24 +55,20 @@ extern "C" void KernelMain(struct platform_information *pi) {
     // 割り込みを有効化
     interrupt::idtr_init();
     interrupt::pic_init();
-    __asm__("sti");
 
     Graphics graphics(&pi->fb);
-    Console console(&graphics, 10, 10);
+    Console console_(&graphics, 10, 10);
+    console = &console_;
 
     acpi::init(pi->rsdp);
-    hpet::init();
+    acpi_timer::Init();
+    apic_timer::Init();
 
-    console.putString("AAA");
-    hpet::sleep(5000000);
-    console.putString("BBB");
-    hpet::sleep(5000000);
-    console.putString("CCC");
-    hpet::sleep(5000000);
-    console.putString("DDD");
-    hpet::sleep(5000000);
-    console.putString("EEE");
-    hpet::sleep(5000000);
+    serial_port::write_serial('A');
+
+    __asm__("sti");
+
+    serial_port::write_serial('A');
 
     // char buf[10];
     // unsigned short vendor;
@@ -91,5 +90,15 @@ extern "C" void KernelMain(struct platform_information *pi) {
         // }
     // }
 
+    while (true) {
+        __asm__("hlt");
+    }
+
     return;
+}
+
+extern "C" void TimerInterrupt() {
+    while (true) {
+        __asm__("hlt");
+    }
 }

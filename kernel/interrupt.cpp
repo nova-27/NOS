@@ -32,12 +32,15 @@ namespace interrupt {
 
     // IDTRを初期化する
     void idtr_init() {
+        void* handler;
+        asm volatile ("lea default_handler, %[handler]":[handler]"=r"(handler));
+
         unsigned char flag =
             INTERRUPT_GATE | GATE_32BIT | GATE_DPL0 | SEGMENT_PRESENT;
         for (int i = 0; i < 256; i++) {
             initGateDescriptor(
                 i,
-                reinterpret_cast<void *>(default_handler),
+                handler,
                 SEGMENT_SELECTOR,
                 flag);
         }
@@ -47,7 +50,7 @@ namespace interrupt {
             GATE_DESCRIPTOR*    base;
         } idtr;
 
-        idtr.size = 256 * sizeof(GATE_DESCRIPTOR);
+        idtr.size = sizeof(idt) - 1;
         idtr.base = idt;
 
         __asm__ (

@@ -1,18 +1,19 @@
 CC = gcc
 CFLAGS =  -Wall -Wextra
 CFLAGS += -nostdlib
-OBJS = objs/main.o objs/entry.o objs/graphics.o objs/console.o objs/asmfunc.o objs/segmentation.o objs/acpi.o objs/interrupt.o objs/hpet.o
+OBJS = objs/main.o objs/entry.o objs/graphics.o objs/console.o objs/asmfunc.o objs/segmentation.o objs/acpi.o objs/interrupt.o objs/acpi_timer.o objs/apic_timer.o objs/serial_port.o
 
 all: kernel.elf
 
 run: kernel.elf
 	mv $< ../root/
 	qemu-system-x86_64 \
-		-drive if=pflash,format=raw,readonly,file=$$HOME/OVMF_CODE.fd \
-		-drive if=pflash,format=raw,file=$$HOME/OVMF_VARS.fd \
+		-drive if=pflash,format=raw,readonly,file=../ovmf/OVMF_CODE.fd \
+		-drive if=pflash,format=raw,file=../ovmf/OVMF_VARS.fd \
 		-m 4G \
 		-drive format=raw,file=fat:rw:../root \
-		-device nec-usb-xhci,id=xhci -device usb-mouse -device usb-kbd
+		-device nec-usb-xhci,id=xhci -device usb-mouse -device usb-kbd \
+		-serial stdio
 
 objs/%.o: %.asm
 	nasm -f elf64 -o $@ $<

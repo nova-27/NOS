@@ -7,10 +7,12 @@
 // http://opensource.org/licenses/mit-license.php
 
 #pragma once
+#include "acpi.hpp"
 
-extern "C" {
-    void io_out32(int addr, int data);
-    int io_in32(int addr);
-    void default_handler();
-    void timer_handler();
-}
+namespace hpet {
+    extern void init();
+    extern void sleep(u_int64_t);
+    extern int  getTime();
+
+    extern u_int64_t reg_base;
+}  // namespace hpet

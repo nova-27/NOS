@@ -89,4 +89,8 @@ namespace hpet {
             GCR = gcr.raw;
         }
     }
+
+    int getTime() {
+        return MCR;
+    }
 }  // namespace hpet
