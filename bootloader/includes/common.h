@@ -15,7 +15,7 @@ struct MemoryInfo {
 };
 
 // フレームバッファに関する情報
-struct fb {
+struct FrameBuffer {
     EFI_PHYSICAL_ADDRESS base;
     UINTN size;
     UINT32 hr;
@@ -24,7 +24,7 @@ struct fb {
 };
 
 // プラットフォーム情報
-struct platform_information {
-    struct fb fb;
+struct PlatformInformation {
+    struct FrameBuffer fb;
     void* rsdp;
 };

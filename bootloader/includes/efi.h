@@ -392,8 +392,8 @@ typedef struct {
 } EFI_FILE_INFO;
 
 // 変数や関数のextern宣言
-extern EFI_SYSTEM_TABLE *ST;
-extern EFI_GRAPHICS_OUTPUT_PROTOCOL *GOP;
-extern EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *SFSP;
-extern void efi_init(EFI_SYSTEM_TABLE *);
+extern EFI_SYSTEM_TABLE *st;
+extern EFI_GRAPHICS_OUTPUT_PROTOCOL *gop;
+extern EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *sfsp;
+extern void efiInit(EFI_SYSTEM_TABLE *);
 extern void *getAcpiTable();

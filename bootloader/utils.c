@@ -3,9 +3,9 @@
 #include "includes/utils.h"
 
 /* 戻り値をチェックする */
-void checkResult(EFI_STATUS result, CHAR16 *String)  {
+void checkResult(EFI_STATUS result, CHAR16 *string)  {
     if (result != EFI_SUCCESS) {
-        ST->ConOut->OutputString(ST->ConOut, String);
+        st->ConOut->OutputString(st->ConOut, string);
         halt();
     }
 }

@@ -14,7 +14,7 @@ objs/%.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 main.efi: $(OBJS)
-	$(CC) $(CFLAGS) -e efi_main -o $@ $+
+	$(CC) $(CFLAGS) -e efiMain -o $@ $+
 
 install: main.efi
 	mv $< ../root/EFI/BOOT/BOOTX64.EFI
