@@ -1,4 +1,4 @@
 root/*
 */objs/*
 ovmf/*
-notused/*
+kernel/notused/*
