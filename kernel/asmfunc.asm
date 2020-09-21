@@ -8,15 +8,28 @@
 
 ;extern timerInterrupt
 
+global ioOut8
+ioOut8: ; void ioOut8(int port, char data);
+    mov     edx, edi   ; port
+    mov     eax, esi   ; data
+    out     dx, al
+    ret
+
+global ioIn8
+ioIn8: ; int ioIn32 (int port);
+    mov     edx, edi   ; port
+    in      al, dx
+    ret
+
 global ioOut32
-ioOut32: ; void io_out32(int port, int data);
+ioOut32: ; void ioOut32(int port, int data);
     mov     edx, edi   ; port
     mov     eax, esi   ; data
     out     dx, eax
     ret
 
 global ioIn32
-ioIn32: ; int io_in32 (int port);
+ioIn32: ; int ioIn32 (int port);
     mov     edx, edi   ; port
     in      eax, dx
     ret

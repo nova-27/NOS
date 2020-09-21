@@ -21,7 +21,7 @@ extern char font_bitmap[0x7f][FONT_HEIGHT][FONT_WIDTH + 1];
 // 使用例 :
 //    Console console(&graphics, 10, 10);
 //    console.setColor(color);
-//    console.putchar('A');
+//    console.putChar('A');
 //    console.putString("ABCDEFG");
 //
 // nowX, nowY は次に書き始める文字の位置を表します

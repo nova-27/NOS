@@ -11,6 +11,7 @@
 #include "graphics.hpp"
 #include "console.hpp"
 #include "asmfunc.hpp"
+#include "serial_port.hpp"
 
 // スタック用変数
 alignas(16) unsigned char kernel_stack[1024 * 1024];
@@ -52,6 +53,9 @@ extern "C" void kernelMain(struct PlatformInformation *pi) {
     Console console(&graphics, 10, 10);
 
     console.putString("ABCD");
+
+    SerialPort serial_port(COM1);
+    serial_port.writeStringSerial("ABCDJANISFJK");
 
     // acpi::init(pi->rsdp);
     // acpi_timer::Init();
