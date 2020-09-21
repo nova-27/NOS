@@ -610,11 +610,11 @@ char font_bitmap[0x7f][FONT_HEIGHT][FONT_WIDTH + 1] {
 // コンストラクタ
 Console::Console(
     Graphics* screen,
-    int baseX,
-    int baseY
-) : screen_(screen), baseX_(baseX), baseY_(baseY) {
-    nowX_ = baseX;
-    nowY_ = baseY;
+    int base_x,
+    int base_y
+) : screen_(screen), base_x_(base_x), base_y_(base_y) {
+    now_x_ = base_x;
+    now_y_ = base_y;
     color color;
     color.red = 0xff;
     color.green = 0xff;
@@ -628,23 +628,23 @@ void Console::setColor(color color) {
 }
 
 // 文字を出力する
-bool Console::putchar(char character) {
-    if (nowX_ + FONT_WIDTH > screen_->getHr()) {
+bool Console::putChar(char character) {
+    if (now_x_ + FONT_WIDTH > screen_->getHr()) {
         // 横がはみ出すなら
-        nowX_ = baseX_;
-        nowY_ += FONT_HEIGHT + FONT_DISTANCE * 2;
+        now_x_ = base_x_;
+        now_y_ += FONT_HEIGHT + FONT_DISTANCE * 2;
     }
 
     // font_bitmap_の*になっている部分は描画、それ以外(空白)は描画しない
     for (int x = 0; x < FONT_WIDTH; x++) {
         for (int y = 0; y < FONT_HEIGHT; y++) {
-            if (font_bitmap[character][y][x] == '*')
-                screen_->drawPixel(x + nowX_, y + nowY_, color_);
+            if (font_bitmap[static_cast<int>(character)][y][x] == '*')
+                screen_->drawPixel(x + now_x_, y + now_y_, color_);
         }
     }
 
     // 次描く位置を右へずらす
-    nowX_ += FONT_WIDTH + FONT_DISTANCE;
+    now_x_ += FONT_WIDTH + FONT_DISTANCE;
 
     return true;
 }
@@ -652,6 +652,6 @@ bool Console::putchar(char character) {
 // 文字列を出力する
 void Console::putString(const char *str) {
     for (int i = 0; str[i] != '\0'; i++) {
-        putchar(str[i]);
+        putChar(str[i]);
     }
 }

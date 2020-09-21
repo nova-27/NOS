@@ -6,7 +6,6 @@
 // This software is released under the MIT License.
 // http://opensource.org/licenses/mit-license.php
 
-#include <stdlib.h>
 #include <string>
 #include "../bootloader/includes/common.h"
 #include "graphics.hpp"
@@ -29,20 +28,20 @@ void intToChar(uint64_t num, char *result, int redix) {
     // 一の位から求めていく
     uint64_t tmp = num;
     for (int i = digit; i > 0; i--) {
-        int numOfPos = tmp % redix;
-        if (numOfPos <= 9) {
+        int num_of_pos = tmp % redix;
+        if (num_of_pos <= 9) {
             // 0から9の範囲
-            result[i - 1] = numOfPos + '0';
+            result[i - 1] = num_of_pos + '0';
         } else {
             // A(0xA)からの範囲
-            result[i - 1] = numOfPos - 10 + 'A';
+            result[i - 1] = num_of_pos - 10 + 'A';
         }
         tmp /= redix;
     }
 }
 
 // エントリポイント
-void kernelMain(struct PlatformInformation *pi) {
+extern "C" void kernelMain(struct PlatformInformation *pi) {
     // セグメントを初期化
     // segmentation::init();
     // 割り込みを有効化
@@ -87,8 +86,8 @@ void kernelMain(struct PlatformInformation *pi) {
     return;
 }
 
-extern "C" void TimerInterrupt() {
+/*extern "C" void TimerInterrupt() {
     while (true) {
         __asm__("hlt");
     }
-}
+}*/

@@ -32,11 +32,11 @@ class Console {
  private:
     Graphics *screen_;
 
-    const int baseX_;
-    const int baseY_;
+    const int base_x_;
+    const int base_y_;
 
-    int nowX_;
-    int nowY_;
+    int now_x_;
+    int now_y_;
 
     color color_;
 
@@ -47,7 +47,7 @@ class Console {
     // 文字色を設定します
     void setColor(color);
     // 一文字を出力します
-    bool putchar(char);
+    bool putChar(char);
     // 文字列を出力します
     void putString(const char*);
 };

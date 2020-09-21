@@ -6,29 +6,28 @@
 ; This software is released under the MIT License.
 ; http://opensource.org/licenses/mit-license.php
 
-extern TimerInterrupt
+;extern timerInterrupt
 
-global io_out32
-io_out32: ; void io_out32(int port, int data);
+global ioOut32
+ioOut32: ; void io_out32(int port, int data);
     mov     edx, edi   ; port
     mov     eax, esi   ; data
     out     dx, eax
     ret
 
-global io_in32
-io_in32: ; int io_in32 (int port);
+global ioIn32
+ioIn32: ; int io_in32 (int port);
     mov     edx, edi   ; port
     in      eax, dx
     ret
 
-global default_handler
-default_handler:
-	mov eax, 0x100
+global defaultHandler
+defaultHandler:
     hlt
-    jmp default_handler
+    jmp defaultHandler
 
-global timer_handler
-timer_handler:
+global timerHandler
+timerHandler:
 	push rax
 	push rcx
 	push rdx
@@ -36,7 +35,7 @@ timer_handler:
 	push rbp
 	push rsi
 	push rdi
-	call TimerInterrupt
+	; call TimerInterrupt
 	pop rdi
 	pop rsi
 	pop rbp

@@ -8,6 +8,8 @@
 
 #include "includes/efi.h"
 
+#define NULL 0
+
 EFI_SYSTEM_TABLE *st;
 EFI_GRAPHICS_OUTPUT_PROTOCOL *gop;
 EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *sfsp;

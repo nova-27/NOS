@@ -9,8 +9,8 @@
 #pragma once
 
 extern "C" {
-    void io_out32(int addr, int data);
-    int io_in32(int addr);
-    void default_handler();
-    void timer_handler();
+    void ioOut32(int addr, int data);
+    int ioIn32(int addr);
+    void defaultHandler();
+    void timerHandler();
 }

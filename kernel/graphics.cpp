@@ -7,7 +7,6 @@
 // http://opensource.org/licenses/mit-license.php
 
 #include "graphics.hpp"
-#include <stdlib.h>
 #include <cstdint>
 
 // コンストラクタ

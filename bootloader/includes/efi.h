@@ -13,7 +13,6 @@
 #define IN
 #define OUT
 #define OPTIONAL
-#define NULL 0
 
 // プロトコルのGUID
 #define EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID \
