@@ -23,9 +23,8 @@ x86_64 UEFI環境で動くように設計されたオペレーティングシス
 
 ## 🧐 概要 <a name="about"></a>
 
-C言語初心者がGUI等の実装を目指して開発しているOSです。<br>
-開発の進捗は [作者のWebサイト](https://novablog.work/category/os%e9%96%8b%e7%99%ba/) で確認できます。<br>
-Nova27's Operating System には、New OS、NOS is Open Source という意味も込められています。
+C/C++/Assembly言語初心者がGUI等の実装を目指して開発しているOSです。<br>
+Nova27's Operating System には、New OS、NOS is Open Source という意味も込められています（適当）
 
 ## 🧰 必要なもの <a name="tools"></a>
 
@@ -39,6 +38,7 @@ g++
 lld
 nasm
 qemu-system-x86
+最新のovmfバイナリ
 ```
 
 ## 🚧 ビルド <a name="build"></a>
@@ -47,6 +47,16 @@ qemu-system-x86
 
 ```
 make all
+```
+
+## 🚧 テスト <a name="test"></a>
+
+最新のovmfバイナリをダウンロードし、`OVMF_CODE.fd`と`OVMF_VARS.fd`を`ovmf`フォルダに入れます。<br>
+`bootloader`ディレクトリに生成された`main.efi`ファイルを`root`フォルダに移動します。<br>
+その後`kernel`ディレクトリで以下のコマンドを実行することでQEmuが起動します。
+
+```
+make run
 ```
 
 ## ✍️ 作者 <a name="author"></a>
