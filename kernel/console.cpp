@@ -1,39 +1,46 @@
+//
+// Nova27's Operating System
+//
+// Copyright (c) 2020 nova27
+//
+// This software is released under the MIT License.
+// http://opensource.org/licenses/mit-license.php
+
 #include "console.hpp"
 
-//フォント(ASCII)
-char FONT_BITMAP[0x7f][FONT_HEIGHT][FONT_WIDTH + 1] {
-    {}, //NUL
-    {}, //SOH
-    {}, //STX
-    {}, //ETX
-    {}, //EOT
-    {}, //ENQ
-    {}, //ACK
-    {}, //BEL
-    {}, //BS
-    {}, //HT
-    {}, //LF
-    {}, //VT
-    {}, //FF
-    {}, //CR
-    {}, //SO
-    {}, //SI
-    {}, //DLE
-    {}, //DC1
-    {}, //DC2
-    {}, //DC3
-    {}, //DC4
-    {}, //NAK
-    {}, //SYN
-    {}, //ETB
-    {}, //CAN
-    {}, //EM
-    {}, //SUB
-    {}, //ESC
-    {}, //FS
-    {}, //GS
-    {}, //RS
-    {}, //US
+char font_bitmap[0x7f][FONT_HEIGHT][FONT_WIDTH + 1] {
+    {},  // NUL
+    {},  // SOH
+    {},  // STX
+    {},  // ETX
+    {},  // EOT
+    {},  // ENQ
+    {},  // ACK
+    {},  // BEL
+    {},  // BS
+    {},  // HT
+    {},  // LF
+    {},  // VT
+    {},  // FF
+    {},  // CR
+    {},  // SO
+    {},  // SI
+    {},  // DLE
+    {},  // DC1
+    {},  // DC2
+    {},  // DC3
+    {},  // DC4
+    {},  // NAK
+    {},  // SYN
+    {},  // ETB
+    {},  // CAN
+    {},  // EM
+    {},  // SUB
+    {},  // ESC
+    {},  // FS
+    {},  // GS
+    {},  // RS
+    {},  // US
     {
         {"        "},
         {"        "},
@@ -598,48 +605,53 @@ char FONT_BITMAP[0x7f][FONT_HEIGHT][FONT_WIDTH + 1] {
         {"*    ** "},
         {"*    ** "},
     },
-}; 
+};
 
-//コンストラクタ
-console::console(graphics* screen, int baseX, int baseY) : m_screen(screen), m_baseX(baseX), m_baseY(baseY) {
-    m_nowX = baseX;
-    m_nowY = baseY;
+// コンストラクタ
+Console::Console(
+    Graphics* screen,
+    int base_x,
+    int base_y
+) : screen_(screen), base_x_(base_x), base_y_(base_y) {
+    now_x_ = base_x;
+    now_y_ = base_y;
     color color;
     color.red = 0xff;
     color.green = 0xff;
     color.blue = 0xff;
-    m_color = color;
+    color_ = color;
 }
 
-//文字色を設定する
-void console::setColor(color color) {
-    m_color = color;
+// 文字色を設定する
+void Console::setColor(color color) {
+    color_ = color;
 }
 
-//文字を出力する
-bool console::putchar(char character) {
-    if(m_nowX + FONT_WIDTH > m_screen->getHr()) {
-        //横がはみ出すなら
-        m_nowX = m_baseX;
-        m_nowY += FONT_HEIGHT + FONT_DISTANCE * 2;
-    };
+// 文字を出力する
+bool Console::putChar(char character) {
+    if (now_x_ + FONT_WIDTH > screen_->getHr()) {
+        // 横がはみ出すなら
+        now_x_ = base_x_;
+        now_y_ += FONT_HEIGHT + FONT_DISTANCE * 2;
+    }
 
-    //文字を描画
-    for(int x = 0; x < FONT_WIDTH; x++) {
-        for(int y = 0; y < FONT_HEIGHT; y++) {
-            if(FONT_BITMAP[character][y][x] == '*') m_screen->drawPixel(x + m_nowX, y + m_nowY, m_color);
+    // font_bitmap_の*になっている部分は描画、それ以外(空白)は描画しない
+    for (int x = 0; x < FONT_WIDTH; x++) {
+        for (int y = 0; y < FONT_HEIGHT; y++) {
+            if (font_bitmap[static_cast<int>(character)][y][x] == '*')
+                screen_->drawPixel(x + now_x_, y + now_y_, color_);
         }
     }
 
-    //次描く位置を右へずらす
-    m_nowX += FONT_WIDTH + FONT_DISTANCE;
+    // 次描く位置を右へずらす
+    now_x_ += FONT_WIDTH + FONT_DISTANCE;
 
     return true;
-};
+}
 
-//文字列を出力する
-void console::putString(const char *str) {
+// 文字列を出力する
+void Console::putString(const char *str) {
     for (int i = 0; str[i] != '\0'; i++) {
-        putchar(str[i]);
+        putChar(str[i]);
     }
 }

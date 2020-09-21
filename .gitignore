@@ -1,3 +1,4 @@
 root/*
 */objs/*
-kernel/font.cpp
+ovmf/*
+kernel/notused/*

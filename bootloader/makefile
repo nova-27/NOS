@@ -11,10 +11,10 @@ run: main.efi
 	qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd -m 4G -drive format=raw,file=fat:rw:../root
 
 objs/%.o: %.c
-	$(CC) $(CFLAGS) -I includes -c -o $@ $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 main.efi: $(OBJS)
-	$(CC) $(CFLAGS) -e efi_main -o $@ $+
+	$(CC) $(CFLAGS) -e efiMain -o $@ $+
 
 install: main.efi
 	mv $< ../root/EFI/BOOT/BOOTX64.EFI
