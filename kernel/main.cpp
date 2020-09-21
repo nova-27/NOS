@@ -12,6 +12,7 @@
 #include "console.hpp"
 #include "asmfunc.hpp"
 #include "serial_port.hpp"
+#include "segmentation.hpp"
 
 // スタック用変数
 alignas(16) unsigned char kernel_stack[1024 * 1024];
@@ -44,7 +45,7 @@ void intToChar(uint64_t num, char *result, int redix) {
 // エントリポイント
 extern "C" void kernelMain(struct PlatformInformation *pi) {
     // セグメントを初期化
-    // segmentation::init();
+    segmentation::init();
     // 割り込みを有効化
     // interrupt::idtr_init();
     // interrupt::pic_init();
@@ -52,20 +53,16 @@ extern "C" void kernelMain(struct PlatformInformation *pi) {
     Graphics graphics(&pi->fb);
     Console console(&graphics, 10, 10);
 
-    console.putString("ABCD");
-
     SerialPort serial_port(COM1);
+
+    console.putString("ABCD");
     serial_port.writeStringSerial("ABCDJANISFJK");
 
     // acpi::init(pi->rsdp);
     // acpi_timer::Init();
     // apic_timer::Init();
 
-    // serial_port::write_serial('A');
-
-    // __asm__("sti");
-
-    // serial_port::write_serial('A');
+    __asm__("sti");
 
     // char buf[10];
     // unsigned short vendor;

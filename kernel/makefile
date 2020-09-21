@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS =  -Wall -Wextra
 CFLAGS += -nostdlib
-OBJS = objs/main.o objs/entry.o objs/graphics.o objs/console.o objs/asmfunc.o objs/serial_port.o
+OBJS = objs/main.o objs/entry.o objs/graphics.o objs/console.o objs/asmfunc.o objs/serial_port.o objs/segmentation.o
 
 all: kernel.elf
 
