@@ -13,6 +13,8 @@
 #include "asmfunc.hpp"
 #include "serial_port.hpp"
 #include "segmentation.hpp"
+#include "interrupt.hpp"
+#include "kbc.hpp"
 
 // スタック用変数
 alignas(16) unsigned char kernel_stack[1024 * 1024];
@@ -47,8 +49,10 @@ extern "C" void kernelMain(struct PlatformInformation *pi) {
     // セグメントを初期化
     segmentation::init();
     // 割り込みを有効化
-    // interrupt::idtr_init();
-    // interrupt::pic_init();
+    interrupt::idtrInit();
+    interrupt::picInit();
+
+    kbcInit();
 
     Graphics graphics(&pi->fb);
     Console console(&graphics, 10, 10);
@@ -62,7 +66,13 @@ extern "C" void kernelMain(struct PlatformInformation *pi) {
     // acpi_timer::Init();
     // apic_timer::Init();
 
-    __asm__("sti");
+    //__asm__("sti");
+
+    while (1) {
+        serial_port.writeStringSerial("ABCDJANISFJK");
+        char c = getc();
+        console.putChar(c);
+    }
 
     // char buf[10];
     // unsigned short vendor;
@@ -84,11 +94,9 @@ extern "C" void kernelMain(struct PlatformInformation *pi) {
         // }
     // }
 
+    while(true) {
+        __asm__ ("hlt");
+    }
+
     return;
 }
-
-/*extern "C" void TimerInterrupt() {
-    while (true) {
-        __asm__("hlt");
-    }
-}*/

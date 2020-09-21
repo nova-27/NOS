@@ -14,5 +14,5 @@ extern "C" {
     void ioOut32(int addr, int data);
     int ioIn32(int addr);
     void defaultHandler();
-    void timerHandler();
+    void kbcHandler();
 }
