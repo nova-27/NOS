@@ -28,7 +28,7 @@ namespace segmentation {
     // セグメンテーションの設定をする
     void init() {
         // GDTRレジスタを設定
-        gdtr.size = 3 * 64;
+        gdtr.size = sizeof(gdt) - 1;
         gdtr.base = gdt;
 
         __asm__ volatile(

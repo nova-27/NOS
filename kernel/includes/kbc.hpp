@@ -12,5 +12,7 @@
 #define ASCII_BS    0x08
 #define ASCII_HT    0x09
 
-extern char getc();
-extern void kbcInit(void);
+// ハンドラの設定やpicの設定をする
+namespace kbc {
+    extern void init();
+}

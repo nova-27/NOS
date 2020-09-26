@@ -10,7 +10,6 @@
 #include "../bootloader/includes/common.h"
 #include "graphics.hpp"
 #include "console.hpp"
-#include "asmfunc.hpp"
 #include "serial_port.hpp"
 #include "segmentation.hpp"
 #include "interrupt.hpp"
@@ -52,7 +51,7 @@ extern "C" void kernelMain(struct PlatformInformation *pi) {
     interrupt::idtrInit();
     interrupt::picInit();
 
-    kbcInit();
+	kbc::init();
 
     Graphics graphics(&pi->fb);
     Console console(&graphics, 10, 10);
@@ -60,19 +59,12 @@ extern "C" void kernelMain(struct PlatformInformation *pi) {
     SerialPort serial_port(COM1);
 
     console.putString("ABCD");
-    serial_port.writeStringSerial("ABCDJANISFJK");
 
     // acpi::init(pi->rsdp);
     // acpi_timer::Init();
     // apic_timer::Init();
 
-    //__asm__("sti");
-
-    while (1) {
-        serial_port.writeStringSerial("ABCDJANISFJK");
-        char c = getc();
-        console.putChar(c);
-    }
+    __asm__("sti");
 
     // char buf[10];
     // unsigned short vendor;
@@ -93,10 +85,6 @@ extern "C" void kernelMain(struct PlatformInformation *pi) {
             // }
         // }
     // }
-
-    while(true) {
-        __asm__ ("hlt");
-    }
-
+//
     return;
 }

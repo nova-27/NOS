@@ -8,12 +8,13 @@
 
 #pragma once
 
+#include <cstdint>
+
 #define SEGMENT_SELECTOR 0x08
 
 #define INTERRUPT_GATE   0b00000110
 #define GATE_32BIT       0b00001000
 #define GATE_DPL0        0b00000000
-#define SEGMENT_PRESENT  0b10000000
 
 #define PORT_MASTER_PIC_COMMAND     0x0020
 #define PORT_MASTER_PIC_STATUS      0x0020
@@ -30,14 +31,15 @@ namespace interrupt {
         uint16_t   offsetLow;
         uint16_t   selector;
         unsigned char   reserved1;
-        unsigned char   flags;
+        unsigned char   flags : 7;
+        unsigned char   present : 1;
         uint16_t       offsetMiddle;
         unsigned int    offsetHigh;
         unsigned int    reserved2;
-    } __attribute__((packed)) GATE_DESCRIPTOR;
+    } GateDescriptor;
 
     // num番のデスクリプターを初期化する
-    extern void initGateDescriptor(int, void*, int16_t, unsigned char);
+    extern void initGateDescriptor(int, void*, unsigned char);
     // IDTRを初期化
     extern void idtrInit();
     // PICを初期化
