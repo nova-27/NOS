@@ -6,7 +6,7 @@
 ; This software is released under the MIT License.
 ; http://opensource.org/licenses/mit-license.php
 
-;extern timerInterrupt
+extern kbcInterrupt
 
 global ioOut8
 ioOut8: ; void ioOut8(int port, char data);
@@ -39,8 +39,8 @@ defaultHandler:
     hlt
     jmp defaultHandler
 
-global timerHandler
-timerHandler:
+global kbcHandler
+kbcHandler:
 	push rax
 	push rcx
 	push rdx
@@ -48,7 +48,7 @@ timerHandler:
 	push rbp
 	push rsi
 	push rdi
-	; call TimerInterrupt
+	call kbcInterrupt
 	pop rdi
 	pop rsi
 	pop rbp

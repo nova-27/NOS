@@ -10,9 +10,10 @@
 #include "../bootloader/includes/common.h"
 #include "graphics.hpp"
 #include "console.hpp"
-#include "asmfunc.hpp"
 #include "serial_port.hpp"
 #include "segmentation.hpp"
+#include "interrupt.hpp"
+#include "kbc.hpp"
 
 // スタック用変数
 alignas(16) unsigned char kernel_stack[1024 * 1024];
@@ -47,8 +48,10 @@ extern "C" void kernelMain(struct PlatformInformation *pi) {
     // セグメントを初期化
     segmentation::init();
     // 割り込みを有効化
-    // interrupt::idtr_init();
-    // interrupt::pic_init();
+    interrupt::idtrInit();
+    interrupt::picInit();
+
+	kbc::init();
 
     Graphics graphics(&pi->fb);
     Console console(&graphics, 10, 10);
@@ -56,7 +59,6 @@ extern "C" void kernelMain(struct PlatformInformation *pi) {
     SerialPort serial_port(COM1);
 
     console.putString("ABCD");
-    serial_port.writeStringSerial("ABCDJANISFJK");
 
     // acpi::init(pi->rsdp);
     // acpi_timer::Init();
@@ -83,12 +85,6 @@ extern "C" void kernelMain(struct PlatformInformation *pi) {
             // }
         // }
     // }
-
+//
     return;
 }
-
-/*extern "C" void TimerInterrupt() {
-    while (true) {
-        __asm__("hlt");
-    }
-}*/
