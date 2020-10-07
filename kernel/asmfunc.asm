@@ -7,6 +7,7 @@
 ; http://opensource.org/licenses/mit-license.php
 
 extern kbcInterrupt
+extern timerInterrupt
 
 global ioOut8
 ioOut8: ; void ioOut8(int port, char data);
@@ -49,6 +50,25 @@ kbcHandler:
 	push rsi
 	push rdi
 	call kbcInterrupt
+	pop rdi
+	pop rsi
+	pop rbp
+	pop rbx
+	pop rdx
+	pop rcx
+	pop rax
+	iretq
+
+global timerHandler
+timerHandler:
+	push rax
+	push rcx
+	push rdx
+	push rbx
+	push rbp
+	push rsi
+	push rdi
+	call timerInterrupt
 	pop rdi
 	pop rsi
 	pop rbp

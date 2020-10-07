@@ -15,4 +15,5 @@ extern "C" {
     int ioIn32(int addr);
     void defaultHandler();
     void kbcHandler();
+    void timerHandler();
 }

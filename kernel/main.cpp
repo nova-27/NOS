@@ -14,6 +14,9 @@
 #include "segmentation.hpp"
 #include "interrupt.hpp"
 #include "kbc.hpp"
+#include "acpi.hpp"
+#include "acpi_timer.hpp"
+#include "apic_timer.hpp"
 
 // スタック用変数
 alignas(16) unsigned char kernel_stack[1024 * 1024];
@@ -50,21 +53,29 @@ extern "C" void kernelMain(struct PlatformInformation *pi) {
     // 割り込みを有効化
     interrupt::idtrInit();
     interrupt::picInit();
-
+    // KBCの設定
 	kbc::init();
+
+    // タイマーの初期化
+    acpi::init(pi->rsdp);
+    acpi_timer::init();
+    apic_timer::init();
+
+    //割り込みの有効化
+    __asm__("sti");
+
+
 
     Graphics graphics(&pi->fb);
     Console console(&graphics, 10, 10);
 
     SerialPort serial_port(COM1);
 
+    //背景色で塗りつぶす
+    Color color = {0x00, 0x99, 0xFF};
+    graphics.fill(1, 1, pi->fb.hr, pi->fb.vr, color);
+
     console.putString("ABCD");
-
-    // acpi::init(pi->rsdp);
-    // acpi_timer::Init();
-    // apic_timer::Init();
-
-    __asm__("sti");
 
     // char buf[10];
     // unsigned short vendor;
@@ -85,6 +96,6 @@ extern "C" void kernelMain(struct PlatformInformation *pi) {
             // }
         // }
     // }
-//
+
     return;
 }

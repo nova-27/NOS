@@ -11,10 +11,10 @@
 
 // 色の情報を入れる構造体
 typedef struct {
-    char red;
-    char green;
-    char blue;
-} color;
+    unsigned char red;
+    unsigned char green;
+    unsigned char blue;
+} Color;
 
 // 1ピクセルの情報
 struct Pixel {
@@ -39,9 +39,9 @@ class Graphics {
     // コンストラクタ
     explicit Graphics(FrameBuffer*);
     // 一ピクセル分を描画する
-    bool drawPixel(int, int, color);
+    bool drawPixel(int, int, Color);
     // 四角形を描画する
-    bool fill(int, int, int, int, color);
+    bool fill(int, int, int, int, Color);
     // 横幅を取得する
     int getHr() const;
 };

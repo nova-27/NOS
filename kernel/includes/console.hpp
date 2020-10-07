@@ -38,14 +38,14 @@ class Console {
     int now_x_;
     int now_y_;
 
-    color color_;
+    Color color_;
 
  public:
     // コンストラクタ
     // Graphicsクラスのオブジェクトはデストラクタが呼ばれても保持し続けます
     Console(Graphics*, int, int);
     // 文字色を設定します
-    void setColor(color);
+    void setColor(Color);
     // 一文字を出力します
     bool putChar(char);
     // 文字列を出力します

@@ -13,7 +13,7 @@
 Graphics::Graphics(FrameBuffer *fb) : fb_(fb) {}
 
 // 1ピクセル描画する
-bool Graphics::drawPixel(int x, int y, color color) {
+bool Graphics::drawPixel(int x, int y, Color color) {
     // (1, 1)ピクセルがm_fb->baseになるから-1する必要がある
     x--;
     y--;
@@ -47,7 +47,7 @@ bool Graphics::drawPixel(int x, int y, color color) {
 }
 
 // (fromX, fromY)から(toX, toY)まで単色で埋める
-bool Graphics::fill(int fromX, int fromY, int toX, int toY, color color) {
+bool Graphics::fill(int fromX, int fromY, int toX, int toY, Color color) {
     int minX = MIN(fromX, toX);
     int maxX = MAX(fromX, toX);
     int minY = MIN(fromY, toY);

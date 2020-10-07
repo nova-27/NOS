@@ -615,7 +615,7 @@ Console::Console(
 ) : screen_(screen), base_x_(base_x), base_y_(base_y) {
     now_x_ = base_x;
     now_y_ = base_y;
-    color color;
+    Color color;
     color.red = 0xff;
     color.green = 0xff;
     color.blue = 0xff;
@@ -623,7 +623,7 @@ Console::Console(
 }
 
 // 文字色を設定する
-void Console::setColor(color color) {
+void Console::setColor(Color color) {
     color_ = color;
 }
 
